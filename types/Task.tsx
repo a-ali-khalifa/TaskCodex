@@ -2,7 +2,7 @@ import { TaskCategory } from "@/lib/enums/TaskCategory";
 import { TaskDifficulty } from "@/lib/enums/TaskDifficulty";
 import { TaskStatus } from "@/lib/enums/TaskStatus";
 
-type Task = {
+export type Task = {
   id: string;
   title: string;
   description: string;
