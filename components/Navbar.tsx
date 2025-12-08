@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
+import { MdOutlineDarkMode } from "react-icons/md";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -12,9 +14,11 @@ export default function Navbar() {
     { label: "About", href: "/about" },
   ];
 
+  const [toggleDarkMode, setToggleDarkMode] = useState<boolean>(false);
+
   return (
     <nav className="">
-      <div className="mx-auto flex justify-around items-center rounded-4xl h-12 hover:bg-black/10 transition-colors duration-200">
+      <div className="mx-auto flex justify-around items-center rounded-4xl h-12 transition-colors duration-200">
         {/* Logo / App Name */}
         <Link href="/" className="text-xl font-[poppins]">
           TaskCodex
@@ -39,6 +43,13 @@ export default function Navbar() {
               </Link>
             );
           })}
+          <button className="cursor-pointer">
+            {toggleDarkMode ? (
+              <></>
+            ) : (
+              <MdOutlineDarkMode className="text-lg hover:text-[#1976D2]" />
+            )}
+          </button>
         </div>
       </div>
     </nav>
