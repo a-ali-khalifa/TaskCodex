@@ -10,18 +10,18 @@ export default function Navbar() {
 
   const navItems = [
     { label: "Home", href: "/" },
-    { label: "Tasks", href: "/tasks" },
+    { label: "Dashboard", href: "/tasks" },
     { label: "About", href: "/about" },
   ];
 
   const [toggleDarkMode, setToggleDarkMode] = useState<boolean>(false);
 
   return (
-    <nav className="">
-      <div className="mx-auto flex justify-around items-center rounded-4xl h-12 transition-colors duration-200">
+    <nav className="bg-white sticky">
+      <div className="mx-auto flex justify-evenly items-center rounded-4xl h-12 transition-colors duration-200">
         {/* Logo / App Name */}
         <Link href="/" className="text-xl font-[poppins]">
-          TaskCodex
+          taskCodex
         </Link>
 
         {/* Nav Items */}
@@ -43,6 +43,7 @@ export default function Navbar() {
               </Link>
             );
           })}
+
           <button className="cursor-pointer">
             {toggleDarkMode ? (
               <></>
