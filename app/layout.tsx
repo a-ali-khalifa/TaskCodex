@@ -4,14 +4,18 @@ import { Nunito, Rubik, Poppins } from "next/font/google";
 
 const nunito = Nunito({
   subsets: ["latin"],
+  variable: "--font-nunito",
 });
 
 const rubik = Rubik({
   subsets: ["latin"],
+  variable: "--font-rubik",
 });
 
 const poppins = Poppins({
-  weight: "400",
+  weight: ["400", "500", "600", "700"],
+  subsets: ["latin"],
+  variable: "--font-poppins",
 });
 
 export const metadata = {
@@ -25,10 +29,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={nunito.className}>
-      <body className="bg-gray-200 m-4 min-h-screen">
+    <html
+      lang="en"
+      className={`${rubik.variable} ${poppins.variable} ${nunito.variable}`}
+    >
+      <body className="min-h-screen bg-gray-200">
         <Navbar />
-        {children}
+        <main className="">{children}</main>
       </body>
     </html>
   );

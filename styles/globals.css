@@ -1,12 +1,23 @@
 @import "tailwindcss";
-@plugin "daisyui";
+/* @plugin "daisyui"; */
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+@theme {
+  /* Fonts */
+  --font-rubik: "Rubik", sans-serif; /* Primary - Content, Body */
+  --font-poppins: "Poppins", sans-serif; /* Secondary - Data, Labels, etc.*/
+  --font-nunito: "Nunito", sans-serif; /* Extra (May remove) */
+
+  --font-family-rubik: "Rubik", sans-serif;
+  --font-family-poppins: "Poppins", sans-serif;
+  --font-family-nunito: "Nunito", sans-serif;
+
+  /* Colors */
+  --color-primary: #3f65ff; /* Warm Blue */
+  --color-secondary: #ff0019; /* Maroon Red */
+  --color-tertiary: #03ac22; /* Bright Green */
 }
 
 body {
-  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
 }

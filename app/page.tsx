@@ -1,22 +1,21 @@
 "use client";
 
 import { Button } from "@/components/Button";
-import { Box, Container, Paper } from "@mui/material";
-import Link from "next/link";
+import { Container } from "@mui/material";
 
 export default function HomePage() {
   return (
     <div className="">
       <Container maxWidth="md" sx={{ py: 16 }}>
         {/* Hero Section */}
-        <section id="hero" className="text-center font-[rubik]">
+        <section id="hero" className="text-center font-rubik">
           <div className="bg-white/70 p-2 rounded-full h-10 flex flex-col justify-center border border-[#3F65FF] ">
-            <p className="text-xl">Level up productivity</p>
+            <p className="text-xl">Level up productivity 🎚️</p>
           </div>
           <br />
-          <p className="text-8xl ">
+          <p className="text-8xl">
             Making tasks feel like{" "}
-            <span className="text-[#3F65FF] drop-shadow-2xl drop-shadow-black/50">
+            <span className="text-primary drop-shadow-2xl drop-shadow-black/50">
               progress
             </span>
           </p>
@@ -30,7 +29,7 @@ export default function HomePage() {
           <br />
 
           {/* <div className="flex gap-6 justify-center"> */}
-          <Button label="Start Leveling 🚀" />
+          <Button label="Start Leveling 🚀" size="lg" variant="outline" />
           {/* <Button label="View demo" /> */}
           {/* </div> */}
         </section>

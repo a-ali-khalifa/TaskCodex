@@ -10,7 +10,7 @@ export default function Navbar() {
 
   const navItems = [
     { label: "Home", href: "/" },
-    { label: "Dashboard", href: "/tasks" },
+    { label: "Dashboard", href: "/dashboard" },
     { label: "About", href: "/about" },
   ];
 
@@ -35,8 +35,8 @@ export default function Navbar() {
                 href={item.href}
                 className={
                   isActive
-                    ? "text-[#1976D2] font-semibold"
-                    : "text-black hover:text-[#427ab1] transition-colors"
+                    ? "text-primary font-semibold"
+                    : "text-black hover:text-primary transition-colors"
                 }
               >
                 {item.label}
@@ -48,7 +48,7 @@ export default function Navbar() {
             {toggleDarkMode ? (
               <></>
             ) : (
-              <MdOutlineDarkMode className="text-lg hover:text-[#1976D2]" />
+              <MdOutlineDarkMode className="text-lg hover:text-primary" />
             )}
           </button>
         </div>
