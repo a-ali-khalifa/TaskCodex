@@ -20,18 +20,12 @@ export default function HomePage() {
             </span>
           </p>
 
-          <br />
-          <p className="text-2xl text-black/60">
+          <p className="text-2xl text-black/60 m-6">
             Transform your to-do list into a leveling journey. Gain experience
             points, track your growth and celebrate each win.
           </p>
 
-          <br />
-
-          {/* <div className="flex gap-6 justify-center"> */}
           <Button label="Start Leveling 🚀" size="lg" variant="outline" />
-          {/* <Button label="View demo" /> */}
-          {/* </div> */}
         </section>
         <section id="features"></section>
       </Container>

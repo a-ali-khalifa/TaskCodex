@@ -7,7 +7,9 @@ import { useState, useEffect } from "react";
 import { FaFireFlameCurved } from "react-icons/fa6";
 import { HiLightningBolt } from "react-icons/hi";
 import {
+  IoAdd,
   IoCheckmarkCircleSharp,
+  IoCheckmarkDoneOutline,
   IoEyeOffOutline,
   IoEyeOutline,
   IoVolumeMedium,
@@ -43,8 +45,8 @@ const page = () => {
             fontFamily: "rubik",
           }}
         >
-          Tasks
-          {/* {`Welcome, ${username}`} */}
+          {/* Tasks */}
+          {`Welcome, Ahmed 👋`}
         </Typography>
         <div className="flex justify-between items-center">
           <Typography
@@ -58,12 +60,13 @@ const page = () => {
             Complete tasks to level up!
           </Typography>
 
-          {/* SETTINGS / TOP BUTTONS */}
+          {/* SETTINGS / CONTROL BUTTONS */}
           <div className="flex gap-2">
             {/* SHOW / HIDE STATS */}
             <button
               className="rounded-full hover:bg-black/10 p-3 cursor-pointer flex justify-center items-center text-center transition-all duration-200"
               onClick={() => setHideStats(!hideStats)}
+              title={!hideStats ? "Hide Stats" : "Show Stats"}
             >
               {hideStats ? (
                 <IoEyeOffOutline className="text-2xl self-center" />
@@ -75,6 +78,7 @@ const page = () => {
             <button
               className="rounded-full hover:bg-black/10 p-3 cursor-pointer flex justify-center items-center text-center transition-all duration-200"
               onClick={() => setIsSoundMuted(!isSoundMuted)}
+              title={!isSoundMuted ? "Mute Sound" : "Enable Sound"}
             >
               {isSoundMuted ? (
                 <IoVolumeMute className="text-2xl self-center" />
@@ -97,17 +101,22 @@ const page = () => {
                 textAlign: "start",
                 backdropFilter: "blur(8px)",
                 flex: 1,
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
               }}
             >
-              <div className="flex items-center gap-1.5">
-                <HiLightningBolt className="text-primary text-[18px]" />
-                <Typography sx={{ fontFamily: "rubik", fontSize: 18 }}>
+              <div className="flex-1 size-full flex justify-center items-center bg-blue-100 rounded-lg">
+                <HiLightningBolt className="text-primary text-[28px]" />
+              </div>
+              <div className="flex flex-2 flex-col">
+                <Typography sx={{ fontFamily: "rubik", fontSize: 14 }}>
                   Total XP
                 </Typography>
+                <Typography sx={{ fontFamily: "rubik", fontSize: 18, mt: 1 }}>
+                  {tasks.length}
+                </Typography>
               </div>
-              <Typography sx={{ fontFamily: "rubik", fontSize: 18, mt: 1 }}>
-                {tasks.length}
-              </Typography>
             </Paper>
 
             {/* STREAK */}
@@ -119,17 +128,22 @@ const page = () => {
                 textAlign: "start",
                 backdropFilter: "blur(8px)",
                 flex: 1,
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
               }}
             >
-              <div className="flex items-center gap-1.5">
-                <FaFireFlameCurved className="text-secondary text-[18px]" />
-                <Typography sx={{ fontFamily: "rubik", fontSize: 18 }}>
+              <div className="flex-1 size-full flex items-center justify-center bg-orange-100 rounded-lg">
+                <FaFireFlameCurved className="text-secondary text-[28px]" />
+              </div>
+              <div className="flex flex-2 flex-col">
+                <Typography sx={{ fontFamily: "rubik", fontSize: 14 }}>
                   Streak
                 </Typography>
+                <Typography sx={{ fontFamily: "rubik", fontSize: 18, mt: 1 }}>
+                  {streak}
+                </Typography>
               </div>
-              <Typography sx={{ fontFamily: "rubik", fontSize: 18, mt: 1 }}>
-                {streak}
-              </Typography>
             </Paper>
 
             {/* COMPLETED TASKS */}
@@ -141,17 +155,22 @@ const page = () => {
                 textAlign: "start",
                 backdropFilter: "blur(8px)",
                 flex: 1,
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
               }}
             >
-              <div className="flex items-center gap-1.5">
-                <IoCheckmarkCircleSharp className="text-tertiary text-[20px]" />
-                <Typography sx={{ fontFamily: "rubik", fontSize: 18 }}>
-                  Completed Tasks
+              <div className="flex-1 flex items-center justify-center size-full bg-green-100 rounded-lg">
+                <IoCheckmarkDoneOutline className="text-tertiary text-[24px]" />
+              </div>
+              <div className="flex flex-2 flex-col">
+                <Typography sx={{ fontFamily: "rubik", fontSize: 14 }}>
+                  Completed
+                </Typography>
+                <Typography sx={{ fontFamily: "rubik", fontSize: 18, mt: 1 }}>
+                  0 Tasks
                 </Typography>
               </div>
-              <Typography sx={{ fontFamily: "rubik", fontSize: 18, mt: 1 }}>
-                0
-              </Typography>
             </Paper>
           </div>
         )}
@@ -161,25 +180,42 @@ const page = () => {
           sx={{
             mt: 2,
             p: 4,
-            borderRadius: 10,
+            borderRadius: 5,
             textAlign: "start",
             backdropFilter: "blur(8px)",
             display: "flex",
-            justifyContent: "space-between",
+            flexDirection: "column",
+            justifyContent: "center",
             alignItems: "center",
-            gap: 4,
+            gap: 1.5,
             fontWeight: 400,
             fontFamily: "rubik",
           }}
         >
-          <p className="">{`Level ${level}`}</p>
-          <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+          <div className="flex justify-between items-center w-full">
+            <div className="flex gap-4">
+              {/* Level Icon */}
+              <div className="border-2 font-medium border-primary text-primary rounded-lg size-12 text-center flex justify-center items-center text-2xl">
+                0
+              </div>
+              {/* Current Level + XP to Next Level */}
+              <div>
+                <p className="font-semibold">{`Level ${level}`}</p>
+                <p className="text-gray-600">0 / 100 XP</p>
+              </div>
+            </div>
+            {/* Remaining XP to Next Level */}
+            <div className="font-medium self-end text-primary">
+              100 XP to Level 1
+            </div>
+          </div>
+
+          <div className="h-1.5 bg-gray-200 w-full rounded-full overflow-hidden">
             <div
               className="h-full bg-primary transition-all duration-300"
-              style={{ width: "0%" }}
-            ></div>
+              style={{ width: "20%" }}
+            />
           </div>
-          <p className="">{level + 1}</p>
         </Paper>
 
         {/* TASKS  */}
@@ -201,29 +237,30 @@ const page = () => {
               fontFamily: "rubik",
             }}
           >
-            <div className="flex justify-between w-full text-2xl px-2">
-              <h1> All Tasks</h1>
-              <span className="text-gray-400">{tasks.length}</span>
-            </div>
-
-            <hr className="my-2 text-gray-200" />
-
-            <div className="flex items-center justify-between">
-              <Typography
-                sx={{
-                  fontSize: 16,
-                  fontFamily: "rubik",
-                  color: "#4C5564",
-                }}
-              >
-                What would you like to accomplish?
-              </Typography>
-
+            <div className="flex justify-between w-full p-2 items-center">
+              <div>
+                <h1 className="text-2xl"> All Tasks</h1>
+                <p className="text-sm text-gray-600">{`0 Total ● 0 Completed`}</p>
+              </div>
               <Button
+                icon={<IoAdd className="text-2xl" />}
                 label="Add Task"
                 onClick={() => setIsTaskDialogOpen(true)}
               />
             </div>
+
+            <hr className="my-2 text-gray-200" />
+
+            <Typography
+              sx={{
+                pt: 1,
+                fontSize: 16,
+                fontFamily: "rubik",
+                color: "#4C5564",
+              }}
+            >
+              What would you like to accomplish?
+            </Typography>
           </Paper>
         )}
         <Dialog

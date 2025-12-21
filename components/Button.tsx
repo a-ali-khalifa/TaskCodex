@@ -1,6 +1,9 @@
+import { ReactNode } from "react";
+
 type ButtonProps = {
   label: string;
   onClick?: () => void;
+  icon?: ReactNode;
   color?: "primary" | "secondary" | "tertiary";
   variant?: "solid" | "outline" | "ghost";
   size?: "sm" | "md" | "lg";
@@ -11,6 +14,7 @@ type ButtonProps = {
 export const Button = ({
   label,
   onClick,
+  icon,
   color = "primary",
   variant = "solid",
   size = "md",
@@ -57,14 +61,17 @@ export const Button = ({
 
   const disabledStyles = "opacity-50 cursor-not-allowed hover:scale-100";
 
+  const iconStyles = "flex items-center justify-center gap-2";
+
   return (
     <button
       onClick={onClick}
       disabled={disabled}
       className={`${baseStyles} ${sizeStyles[size]} ${
         colorStyles[variant][color]
-      } ${disabled ?? disabledStyles} ${className}`}
+      } ${disabled ?? disabledStyles} ${icon && iconStyles} ${className}`}
     >
+      {icon}
       {label}
     </button>
   );
