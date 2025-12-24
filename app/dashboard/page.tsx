@@ -1,14 +1,15 @@
 "use client";
 
+import AddTaskDialog from "@/components/AddTaskDialog";
 import { Button } from "@/components/Button";
-import Dialog from "@/components/Dialog";
-import { Container, Paper, TextField, Typography } from "@mui/material";
+import { TaskCard } from "@/components/TaskCard";
+import { Task } from "@/types/Task";
+import { Container, Paper, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
 import { FaFireFlameCurved } from "react-icons/fa6";
 import { HiLightningBolt } from "react-icons/hi";
 import {
   IoAdd,
-  IoCheckmarkCircleSharp,
   IoCheckmarkDoneOutline,
   IoEyeOffOutline,
   IoEyeOutline,
@@ -18,9 +19,9 @@ import {
 
 const page = () => {
   const [username, setUsername] = useState<string>("");
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [level, setLevel] = useState<number>(0);
-  const [totalXp, setTotalXp] = useState<number>();
+  const [totalXp, setTotalXp] = useState<number>(0);
   const [streak, setStreak] = useState(0);
 
   const [hideStats, setHideStats] = useState<boolean>(false); //toggle stats box
@@ -28,11 +29,10 @@ const page = () => {
 
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState<boolean>(false); //toggle dialog for add New Task
 
-  const taskTitlePlaceholders = [
-    "Go for a Jog 👟",
-    "Meditate for 30 mins 🧘‍♂️",
-    "Drink some water 🫗",
-  ];
+  //TODO: remove
+  useEffect(() => {
+    console.log(tasks);
+  }, [tasks]);
 
   return (
     <div>
@@ -74,7 +74,7 @@ const page = () => {
                 <IoEyeOutline className="text-2xl self-center" />
               )}
             </button>
-            {/* ENABLE / MUTE SOUND         */}
+            {/* ENABLE / MUTE SOUND */}
             <button
               className="rounded-full hover:bg-black/10 p-3 cursor-pointer flex justify-center items-center text-center transition-all duration-200"
               onClick={() => setIsSoundMuted(!isSoundMuted)}
@@ -114,7 +114,7 @@ const page = () => {
                   Total XP
                 </Typography>
                 <Typography sx={{ fontFamily: "rubik", fontSize: 18, mt: 1 }}>
-                  {tasks.length}
+                  {totalXp}
                 </Typography>
               </div>
             </Paper>
@@ -219,38 +219,40 @@ const page = () => {
         </Paper>
 
         {/* TASKS  */}
-        {tasks.length != 0 ? (
+
+        {/* {tasks.length != 0 ? (
           //TODO: Show Icon & Message. Prompt to add tasks.
           <div>no tasks</div>
-        ) : (
-          <Paper
-            elevation={3}
-            sx={{
-              mt: 4,
-              p: 3,
-              borderRadius: 10,
-              textAlign: "start",
-              backdropFilter: "blur(8px)",
-              // display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              fontFamily: "rubik",
-            }}
-          >
-            <div className="flex justify-between w-full p-2 items-center">
-              <div>
-                <h1 className="text-2xl"> All Tasks</h1>
-                <p className="text-sm text-gray-600">{`0 Total ● 0 Completed`}</p>
-              </div>
-              <Button
-                icon={<IoAdd className="text-2xl" />}
-                label="Add Task"
-                onClick={() => setIsTaskDialogOpen(true)}
-              />
+        ) : ( */}
+        <Paper
+          elevation={3}
+          sx={{
+            my: 4,
+            p: 3,
+            borderRadius: 10,
+            textAlign: "start",
+            backdropFilter: "blur(8px)",
+            // display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            fontFamily: "rubik",
+          }}
+        >
+          <div className="flex justify-between w-full p-2 items-center">
+            <div>
+              <h1 className="text-2xl"> All Tasks</h1>
+              <p className="text-sm text-gray-600">{`0 Total ● 0 Not Started / To-do ● 0 In Progress`}</p>
             </div>
+            <Button
+              icon={<IoAdd className="text-2xl" />}
+              label="Add Task"
+              onClick={() => setIsTaskDialogOpen(true)}
+            />
+          </div>
 
-            <hr className="my-2 text-gray-200" />
+          <hr className="my-2 text-gray-200" />
 
+          {tasks.length == 0 ? (
             <Typography
               sx={{
                 pt: 1,
@@ -261,51 +263,33 @@ const page = () => {
             >
               What would you like to accomplish?
             </Typography>
-          </Paper>
-        )}
-        <Dialog
+          ) : (
+            <div className="flex flex-col gap-3">
+              {tasks.map((task) => (
+                <TaskCard
+                  key={task.id}
+                  title={task.title}
+                  description={task.description}
+                  difficulty={task.difficulty}
+                  status={task.status}
+                />
+              ))}
+            </div>
+          )}
+        </Paper>
+        {/* )} */}
+
+        {/* NEW TASK */}
+        <AddTaskDialog
+          tasks={tasks}
+          setTasks={setTasks}
           isOpen={isTaskDialogOpen}
           onClose={() => {
             setIsTaskDialogOpen(false);
           }}
-          title="New Task"
-        >
-          <div className="flex flex-col gap-2">
-            {/* title: string;
-  description: string;
-  category: TaskCategory | string;
-  difficulty: TaskDifficulty;
-  xp: number;
-  status: TaskStatus;
-  createdAt: string;
-  dueDate?: string;
-  completed: boolean;
-  completedAt: string | null; */}
-            <TextField
-              id="outlined-basic"
-              label="Title"
-              variant="outlined"
-              required={true}
-              placeholder={
-                taskTitlePlaceholders[
-                  Math.floor(Math.random() * taskTitlePlaceholders.length)
-                ]
-              } // Get a random task title as a placeholder
-            />
+        />
 
-            <TextField
-              id="outlined-basic"
-              label="Description"
-              variant="outlined"
-            />
-            <p>Category</p>
-            <p>difficulty</p>
-            <p>status</p>
-            <p>dueDate</p>
-            <p>status?</p>
-            <Button label="Create" onClick={() => {}} />
-          </div>
-        </Dialog>
+        {/* {isTaskDialogOpen && <TaskBox />} */}
       </Container>
     </div>
   );
