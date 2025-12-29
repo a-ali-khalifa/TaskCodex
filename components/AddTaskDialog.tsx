@@ -3,9 +3,15 @@
 import { Dispatch, SetStateAction, useState } from "react";
 import Dialog from "@/components/Dialog";
 import { Task } from "@/types/Task";
-import { TextField } from "@mui/material";
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+} from "@mui/material";
 import { Button } from "@/components/Button";
-import { DIFFICULTIES, STATUSES } from "@/lib/enums";
+import { CATEGORIES, DIFFICULTIES, STATUSES } from "@/lib/enums";
 
 type AddTaskDialogProps = {
   isOpen: boolean;
@@ -24,10 +30,12 @@ export default function AddTaskDialog({
     id: (Math.random() * 10000).toString(),
     title: "",
     description: "",
+    category: "",
     difficulty: "MEDIUM",
     xp: DIFFICULTIES.MEDIUM.xp,
     status: STATUSES.TODO,
     createdAt: "",
+    dueDate: "",
     completed: false,
     completedAt: "",
   });
@@ -45,6 +53,7 @@ export default function AddTaskDialog({
     }
 
     // Create task logic here
+    taskData.createdAt = new Date().toISOString();
     console.log("Creating task:", taskData);
     setTasks([...tasks, taskData]);
 
@@ -53,10 +62,12 @@ export default function AddTaskDialog({
       id: (Math.random() * 10000).toFixed(0).toString(),
       title: "",
       description: "",
+      category: "",
       difficulty: "MEDIUM",
       xp: DIFFICULTIES.MEDIUM.xp,
       status: STATUSES.TODO,
       createdAt: "",
+      dueDate: "",
       completed: false,
       completedAt: "",
     });
@@ -66,7 +77,8 @@ export default function AddTaskDialog({
   return (
     <Dialog isOpen={isOpen} onClose={onClose} title="Create New Task">
       <div className="space-y-4">
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-4">
+          {/* TITLE */}
           <TextField
             id="outlined-basic"
             label="Title"
@@ -83,6 +95,7 @@ export default function AddTaskDialog({
             } // Get a random task title as a placeholder
           />
 
+          {/* DESCRIPTION */}
           <TextField
             id="outlined-basic"
             label="Description"
@@ -92,13 +105,88 @@ export default function AddTaskDialog({
               setTaskData({ ...taskData, description: e.target.value })
             }
           />
-          <p>Category</p>
-          <p>difficulty</p>
-          <p>status</p>
-          <p>dueDate</p>
-          <p>status?</p>
+
+          {/* CATEGORY */}
+          <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-label">Category</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={taskData.category}
+              label="Category"
+              onChange={(e) =>
+                setTaskData({ ...taskData, category: e.target.value })
+              }
+            >
+              {Object.values(CATEGORIES).map((category) => (
+                <MenuItem value={category}>{category}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          {/* DIFFICULTY */}
+          <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-label">Difficulty</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={taskData.difficulty}
+              label="Difficulty"
+              onChange={(e) =>
+                setTaskData({
+                  ...taskData,
+                  difficulty: e.target.value,
+                  xp: DIFFICULTIES[e.target.value as keyof typeof DIFFICULTIES]
+                    .xp,
+                })
+              }
+            >
+              {Object.entries(DIFFICULTIES).map(([key, diff]) => (
+                <MenuItem
+                  key={key}
+                  value={key}
+                >{`${diff.label} (${diff.xp} XP)`}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          {/* STATUS */}
+          <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-label">Status</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={taskData.status}
+              label="Status"
+              onChange={(e) =>
+                setTaskData({ ...taskData, status: e.target.value })
+              }
+            >
+              {Object.values(STATUSES).map((status) => (
+                <MenuItem value={status}>{status}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          {/* DUE DATE & TIME */}
+          <div className="flex flex-col gap-2">
+            <label htmlFor="" className="text-sm text-gray-600 ml-1">
+              Due by:
+            </label>
+            <input
+              type="datetime-local"
+              value={taskData.dueDate}
+              onChange={(e) =>
+                setTaskData({ ...taskData, dueDate: e.target.value })
+              }
+              className="p-3 rounded-lg border border-gray-300"
+            />
+          </div>
+
+          {/* ACTION BUTTONS */}
           <Button label="Create" onClick={handleSubmit} />
         </div>
+
         {/* <input
           type="text"
           placeholder="Task title"

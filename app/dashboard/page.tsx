@@ -29,6 +29,11 @@ const page = () => {
 
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState<boolean>(false); //toggle dialog for add New Task
 
+  const handleDelete = (taskId: string) => {
+    const updatedTasks = tasks.filter((task) => taskId !== task.id);
+    setTasks(updatedTasks);
+  };
+
   //TODO: remove
   useEffect(() => {
     console.log(tasks);
@@ -240,7 +245,7 @@ const page = () => {
         >
           <div className="flex justify-between w-full p-2 items-center">
             <div>
-              <h1 className="text-2xl"> All Tasks</h1>
+              <h1 className="text-2xl">All Tasks</h1>
               <p className="text-sm text-gray-600">{`0 Total ● 0 Not Started / To-do ● 0 In Progress`}</p>
             </div>
             <Button
@@ -271,7 +276,9 @@ const page = () => {
                   title={task.title}
                   description={task.description}
                   difficulty={task.difficulty}
+                  xp={task.xp}
                   status={task.status}
+                  handleDelete={() => handleDelete(task.id)}
                 />
               ))}
             </div>
@@ -289,6 +296,7 @@ const page = () => {
           }}
         />
 
+        {/* TODO: In the future, replace above dialog with an inline */}
         {/* {isTaskDialogOpen && <TaskBox />} */}
       </Container>
     </div>

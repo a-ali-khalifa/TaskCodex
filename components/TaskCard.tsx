@@ -4,12 +4,13 @@ import { MdCheckCircle, MdOutlineCircle } from "react-icons/md";
 
 export const TaskCard = ({
   title = "task",
-  description,
+  description, //todo: remove
   category,
   difficulty = DIFFICULTIES.MEDIUM,
   xp = DIFFICULTIES.MEDIUM.xp,
   status = STATUSES.TODO,
   completed = false,
+  handleDelete = () => {},
 }: any) => {
   return (
     <div className="border border-gray-300 rounded-xl p-4 flex justify-between items-center font-rubik">
@@ -33,7 +34,10 @@ export const TaskCard = ({
         <p className="text-sm p-2 border border-gray-400 rounded-xl bg-gray-100 text-gray-600">
           {status}
         </p>
-        <button className="p-2 rounded-full hover:bg-gray-100 transition-all delay-200 ease-in-out cursor-pointer">
+        <button
+          className="p-2 rounded-full hover:bg-gray-100 transition-all delay-200 ease-in-out cursor-pointer"
+          onClick={handleDelete}
+        >
           <IoClose className="text-2xl text-gray-400" />
         </button>
       </div>
