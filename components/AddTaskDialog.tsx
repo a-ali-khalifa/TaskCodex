@@ -52,7 +52,7 @@ export default function AddTaskDialog({
       return;
     }
 
-    // Create task logic here
+    // Task logic
     taskData.createdAt = new Date().toISOString();
     console.log("Creating task:", taskData);
     setTasks([...tasks, taskData]);
@@ -75,7 +75,7 @@ export default function AddTaskDialog({
   };
 
   return (
-    <Dialog isOpen={isOpen} onClose={onClose} title="Create New Task">
+    <Dialog isOpen={isOpen} onClose={onClose} title="New Task">
       <div className="space-y-4">
         <div className="flex flex-col gap-4">
           {/* TITLE */}
@@ -187,6 +187,7 @@ export default function AddTaskDialog({
           <Button label="Create" onClick={handleSubmit} />
         </div>
 
+        {/* CUSTOM STYLING - WIP */}
         {/* <input
           type="text"
           placeholder="Task title"

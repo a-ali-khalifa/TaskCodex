@@ -2,7 +2,10 @@
 
 import AddTaskDialog from "@/components/AddTaskDialog";
 import { Button } from "@/components/Button";
+import DeleteTaskDialog from "@/components/DeleteTaskDialog";
+import EditTaskDialog from "@/components/EditTaskDialog";
 import { TaskCard } from "@/components/TaskCard";
+import { STATUSES } from "@/lib/enums";
 import { Task } from "@/types/Task";
 import { Container, Paper, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
@@ -27,16 +30,27 @@ const page = () => {
   const [hideStats, setHideStats] = useState<boolean>(false); //toggle stats box
   const [isSoundMuted, setIsSoundMuted] = useState<boolean>(false); //toggle sound (level up, new task, streak)
 
-  const [isTaskDialogOpen, setIsTaskDialogOpen] = useState<boolean>(false); //toggle dialog for add New Task
+  const [openAddTaskDialog, setOpenAddTaskDialog] = useState<boolean>(false); //toggle dialog for adding New Task
+  const [openEditTaskDialog, setOpenEditTaskDialog] = useState<boolean>(false); //toggle dialog for Editting Task
+  const [openDeleteTaskDialog, setOpenDeleteTaskDialog] =
+    useState<boolean>(false); //toggle dialog for Delete Confirmation
+
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
   const handleDelete = (taskId: string) => {
     const updatedTasks = tasks.filter((task) => taskId !== task.id);
     setTasks(updatedTasks);
   };
 
+  const handleUpdateTask = (id: string, updatedData: Partial<Task>) => {
+    setTasks(
+      tasks.map((task) => (task.id === id ? { ...task, ...updatedData } : task))
+    );
+  };
+
   //TODO: remove
   useEffect(() => {
-    console.log(tasks);
+    console.log("tasks:", tasks);
   }, [tasks]);
 
   return (
@@ -246,12 +260,16 @@ const page = () => {
           <div className="flex justify-between w-full p-2 items-center">
             <div>
               <h1 className="text-2xl">All Tasks</h1>
-              <p className="text-sm text-gray-600">{`0 Total ● 0 Not Started / To-do ● 0 In Progress`}</p>
+              <p className="text-sm text-gray-600">{`${tasks.length} Total ● ${
+                tasks.filter((t) => t.status === STATUSES.TODO).length
+              } ${STATUSES.TODO} ● ${
+                tasks.filter((t) => t.status === STATUSES.IN_PROGRESS).length
+              } ${STATUSES.IN_PROGRESS}`}</p>
             </div>
             <Button
               icon={<IoAdd className="text-2xl" />}
               label="Add Task"
-              onClick={() => setIsTaskDialogOpen(true)}
+              onClick={() => setOpenAddTaskDialog(true)}
             />
           </div>
 
@@ -278,7 +296,14 @@ const page = () => {
                   difficulty={task.difficulty}
                   xp={task.xp}
                   status={task.status}
-                  handleDelete={() => handleDelete(task.id)}
+                  onEdit={() => {
+                    setSelectedTaskId(task.id);
+                    setOpenEditTaskDialog(true);
+                  }}
+                  onDelete={() => {
+                    setSelectedTaskId(task.id);
+                    setOpenDeleteTaskDialog(true);
+                  }}
                 />
               ))}
             </div>
@@ -286,13 +311,37 @@ const page = () => {
         </Paper>
         {/* )} */}
 
+        {/* EDIT TASK */}
+        <EditTaskDialog
+          isOpen={openEditTaskDialog}
+          onClose={() => {
+            setOpenEditTaskDialog(false);
+          }}
+          taskId={selectedTaskId}
+          tasks={tasks}
+          onEdit={handleUpdateTask}
+        />
+
+        {/* DELETE TASK */}
+        <DeleteTaskDialog
+          isOpen={openDeleteTaskDialog}
+          onClose={() => {
+            setOpenDeleteTaskDialog(false);
+          }}
+          onDelete={() => {
+            handleDelete(selectedTaskId!);
+            setSelectedTaskId(null);
+            setOpenDeleteTaskDialog(false);
+          }}
+        />
+
         {/* NEW TASK */}
         <AddTaskDialog
           tasks={tasks}
           setTasks={setTasks}
-          isOpen={isTaskDialogOpen}
+          isOpen={openAddTaskDialog}
           onClose={() => {
-            setIsTaskDialogOpen(false);
+            setOpenAddTaskDialog(false);
           }}
         />
 

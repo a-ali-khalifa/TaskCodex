@@ -22,7 +22,7 @@ export const Button = ({
   className = "",
 }: ButtonProps) => {
   const baseStyles =
-    "font-rubik font-medium rounded-xl transition-all duration-200 active:scale-95";
+    "font-rubik font-medium rounded-xl transition-all duration-200 active:scale-95 cursor-pointer";
 
   const sizeStyles = {
     sm: "px-4 py-2 text-sm",
