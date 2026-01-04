@@ -5,7 +5,7 @@ import { Button } from "@/components/Button";
 import DeleteTaskDialog from "@/components/DeleteTaskDialog";
 import EditTaskDialog from "@/components/EditTaskDialog";
 import { TaskCard } from "@/components/TaskCard";
-import { STATUSES } from "@/lib/enums";
+import { DIFFICULTIES, Difficulty, STATUSES } from "@/lib/enums";
 import { Task } from "@/types/Task";
 import { Container, Paper, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
@@ -36,6 +36,38 @@ const page = () => {
     useState<boolean>(false); //toggle dialog for Delete Confirmation
 
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+
+  const handleCreateTask = (title: string, difficulty: Difficulty) => {
+    const newTask: Task = {
+      id: (Math.random() * 10000).toString(),
+      title: title,
+      category: "",
+      description: "",
+      difficulty: difficulty,
+      xp: DIFFICULTIES[difficulty].xp,
+      status: "TODO",
+      createdAt: new Date().toISOString(),
+      completed: false,
+      completedAt: null,
+      dueDate: "",
+    };
+    setTasks([...tasks, newTask]);
+    console.log("Created task: ", newTask);
+  };
+
+  const handleToggleCompletion = (id: string) => {
+    setTasks(
+      tasks.map((task) =>
+        task.id === id
+          ? {
+              ...task,
+              status: task.completed ? "TODO" : "COMPLETED",
+              completed: task.completed ? false : true,
+            }
+          : task
+      )
+    );
+  };
 
   const handleDelete = (taskId: string) => {
     const updatedTasks = tasks.filter((task) => taskId !== task.id);
@@ -261,16 +293,18 @@ const page = () => {
             <div>
               <h1 className="text-2xl">All Tasks</h1>
               <p className="text-sm text-gray-600">{`${tasks.length} Total ● ${
-                tasks.filter((t) => t.status === STATUSES.TODO).length
-              } ${STATUSES.TODO} ● ${
-                tasks.filter((t) => t.status === STATUSES.IN_PROGRESS).length
-              } ${STATUSES.IN_PROGRESS}`}</p>
+                tasks.filter((t) => t.status === "TODO").length
+              } ${STATUSES.TODO.label} ● ${
+                tasks.filter((t) => t.status === "IN_PROGRESS").length
+              } ${STATUSES.IN_PROGRESS.label}`}</p>
             </div>
-            <Button
-              icon={<IoAdd className="text-2xl" />}
-              label="Add Task"
-              onClick={() => setOpenAddTaskDialog(true)}
-            />
+            <div className="relative">
+              <Button
+                icon={<IoAdd className="text-2xl" />}
+                label="Add Task"
+                onClick={() => setOpenAddTaskDialog(true)}
+              />
+            </div>
           </div>
 
           <hr className="my-2 text-gray-200" />
@@ -296,6 +330,7 @@ const page = () => {
                   difficulty={task.difficulty}
                   xp={task.xp}
                   status={task.status}
+                  onToggleCompletion={() => handleToggleCompletion(task.id)}
                   onEdit={() => {
                     setSelectedTaskId(task.id);
                     setOpenEditTaskDialog(true);
@@ -336,6 +371,7 @@ const page = () => {
         />
 
         {/* NEW TASK */}
+        {/* V1 */}
         <AddTaskDialog
           tasks={tasks}
           setTasks={setTasks}
@@ -344,9 +380,14 @@ const page = () => {
             setOpenAddTaskDialog(false);
           }}
         />
-
-        {/* TODO: In the future, replace above dialog with an inline */}
-        {/* {isTaskDialogOpen && <TaskBox />} */}
+        {/* V2 */}
+        {/* <AddTask
+          isOpen={openAddTaskDialog}
+          onClose={() => {
+            setOpenAddTaskDialog(false);
+          }}
+          onCreateTask={handleCreateTask}
+        /> */}
       </Container>
     </div>
   );

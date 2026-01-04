@@ -139,8 +139,10 @@ export default function EditTaskDialogProps({
                 setTaskData({ ...taskData, status: e.target.value })
               }
             >
-              {Object.values(STATUSES).map((status) => (
-                <MenuItem value={status}>{status}</MenuItem>
+              {Object.entries(STATUSES).map(([key, status]) => (
+                <MenuItem key={key} value={key}>
+                  {status.label}
+                </MenuItem>
               ))}
             </Select>
           </FormControl>

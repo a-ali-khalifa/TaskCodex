@@ -17,6 +17,7 @@ type TaskCardProps = {
   createdAt?: string;
   status?: Status;
   completed?: boolean;
+  onToggleCompletion?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
 };
@@ -27,8 +28,9 @@ export const TaskCard = ({
   category,
   difficulty = "MEDIUM",
   xp = DIFFICULTIES.MEDIUM.xp,
-  status = STATUSES.TODO,
+  status = "TODO",
   completed = false,
+  onToggleCompletion = () => {},
   onEdit = () => {},
   onDelete = () => {},
 }: TaskCardProps) => {
@@ -36,9 +38,15 @@ export const TaskCard = ({
     <div className="border border-gray-300 rounded-xl p-4 flex justify-between items-center font-rubik">
       <div className="flex gap-2 items-center justify-center">
         {completed ? (
-          <MdCheckCircle className="text-2xl text-tertiary cursor-pointer" />
+          <MdCheckCircle
+            className="text-2xl text-tertiary cursor-pointer"
+            onClick={onToggleCompletion}
+          />
         ) : (
-          <MdOutlineCircle className="text-2xl cursor-pointer text-gray-400" />
+          <MdOutlineCircle
+            className="text-2xl cursor-pointer text-gray-400"
+            onClick={onToggleCompletion}
+          />
         )}
         <button className="text-xl cursor-pointer" onClick={onEdit}>
           {title}
@@ -57,12 +65,10 @@ export const TaskCard = ({
           }}
           className={"text-md p-2 rounded-xl"}
         >
-          {`${DIFFICULTIES[difficulty].label}: ${xp} XP`}
+          {`${DIFFICULTIES[difficulty].label} • ${xp} XP`}
         </p>
-        <p className="text-sm p-2 border border-gray-400 rounded-lg bg-gray-100 text-gray-600">
-          {status === STATUSES.TODO
-            ? STATUSES.TODO.toLocaleUpperCase()
-            : status}
+        <p className={`text-sm p-2 rounded-lg ${STATUSES[status].style}`}>
+          {status === "TODO" ? status : STATUSES[status].label}
           {/* "Todo -> TODO" */}
         </p>
         <button

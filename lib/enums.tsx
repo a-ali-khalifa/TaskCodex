@@ -1,11 +1,20 @@
 //TASKS
 export const STATUSES = {
-  TODO: "Todo",
-  IN_PROGRESS: "In Progress",
-  COMPLETED: "Completed",
+  TODO: {
+    label: "Todo",
+    style: "border border-gray-400 bg-gray-100 text-gray-600",
+  },
+  IN_PROGRESS: {
+    label: "In Progress",
+    style: "border border-primary bg-blue-100 text-primary",
+  },
+  COMPLETED: {
+    label: "Completed",
+    style: "border border-green-400 bg-green-100 text-green-600",
+  },
 } as const;
 
-export type Status = (typeof STATUSES)[keyof typeof STATUSES];
+export type Status = keyof typeof STATUSES;
 
 export const DIFFICULTIES = {
   EASY: { label: "Easy", xp: 100, color: "#006C14", background: "#D0FFBA" },

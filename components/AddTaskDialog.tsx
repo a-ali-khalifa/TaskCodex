@@ -33,7 +33,7 @@ export default function AddTaskDialog({
     category: "",
     difficulty: "MEDIUM",
     xp: DIFFICULTIES.MEDIUM.xp,
-    status: STATUSES.TODO,
+    status: "TODO",
     createdAt: "",
     dueDate: "",
     completed: false,
@@ -65,7 +65,7 @@ export default function AddTaskDialog({
       category: "",
       difficulty: "MEDIUM",
       xp: DIFFICULTIES.MEDIUM.xp,
-      status: STATUSES.TODO,
+      status: "TODO",
       createdAt: "",
       dueDate: "",
       completed: false,
@@ -76,7 +76,7 @@ export default function AddTaskDialog({
 
   return (
     <Dialog isOpen={isOpen} onClose={onClose} title="New Task">
-      <div className="space-y-4">
+      <div className={`space-y-4`}>
         <div className="flex flex-col gap-4">
           {/* TITLE */}
           <TextField
@@ -162,8 +162,10 @@ export default function AddTaskDialog({
                 setTaskData({ ...taskData, status: e.target.value })
               }
             >
-              {Object.values(STATUSES).map((status) => (
-                <MenuItem value={status}>{status}</MenuItem>
+              {Object.entries(STATUSES).map(([key, status]) => (
+                <MenuItem key={key} value={key}>
+                  {status.label}
+                </MenuItem>
               ))}
             </Select>
           </FormControl>
