@@ -7,6 +7,7 @@ import EditTaskDialog from "@/components/EditTaskDialog";
 import { TaskCard } from "@/components/TaskCard";
 import { DIFFICULTIES, Difficulty, STATUSES } from "@/lib/enums";
 import { Task } from "@/types/Task";
+import { UserProgress } from "@/types/UserProgress";
 import { Container, Paper, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
 import { FaFireFlameCurved } from "react-icons/fa6";
@@ -21,12 +22,20 @@ import {
 } from "react-icons/io5";
 
 const page = () => {
+  // STATE VARIABLES
+  //  INFO
   const [username, setUsername] = useState<string>("");
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [level, setLevel] = useState<number>(0);
-  const [totalXp, setTotalXp] = useState<number>(0);
+  const [progress, setProgress] = useState<UserProgress>({
+    level: 1,
+    currentXP: 0,
+    totalXP: 0,
+  });
+
+  //  STATS
   const [streak, setStreak] = useState(0);
 
+  //  OTHERS
   const [hideStats, setHideStats] = useState<boolean>(false); //toggle stats box
   const [isSoundMuted, setIsSoundMuted] = useState<boolean>(false); //toggle sound (level up, new task, streak)
 
@@ -37,7 +46,42 @@ const page = () => {
 
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
-  const handleCreateTask = (title: string, difficulty: Difficulty) => {
+  //FUNCTIONS
+  const updateXp = (taskXP: number, isAdd: boolean = true) => {
+    setProgress((prev) => {
+      const newCurrentXP = isAdd
+        ? prev.currentXP + taskXP
+        : taskXP >= prev.currentXP
+        ? 0
+        : prev.currentXP - taskXP;
+      const newTotalXP = isAdd ? prev.totalXP + taskXP : prev.totalXP - taskXP;
+      const xpNeeded = getTargetXpByLevel(prev.level);
+
+      // Check if leveled up
+      if (newCurrentXP >= xpNeeded) {
+        const overflow = newCurrentXP - xpNeeded;
+        return {
+          level: prev.level + 1,
+          currentXP: overflow, // Carry over extra XP
+          totalXP: newTotalXP,
+        };
+      }
+
+      // Normal XP gain
+      return {
+        ...prev,
+        currentXP: newCurrentXP,
+        totalXP: newTotalXP,
+      };
+    });
+  };
+
+  const getTargetXpByLevel = (currentLevel: number): number => {
+    const target = Math.floor(100 * Math.pow(currentLevel, 1.5));
+    return target;
+  };
+
+  const handleAddTask = (title: string, difficulty: Difficulty) => {
     const newTask: Task = {
       id: (Math.random() * 10000).toString(),
       title: title,
@@ -55,6 +99,14 @@ const page = () => {
     console.log("Created task: ", newTask);
   };
 
+  const handleCalcXp = (id: string, isAdd: boolean = true) => {
+    const taskXp = tasks.find((t) => t.id === id)!.xp;
+
+    // If isAdd is true: add values.
+    // If isAdd is false: subtract task xp from current. If task xp is more than current, then current just goes down to 0 (not negative).
+    updateXp(taskXp!, isAdd);
+  };
+
   const handleToggleCompletion = (id: string) => {
     setTasks(
       tasks.map((task) =>
@@ -62,7 +114,7 @@ const page = () => {
           ? {
               ...task,
               status: task.completed ? "TODO" : "COMPLETED",
-              completed: task.completed ? false : true,
+              completed: !task.completed,
             }
           : task
       )
@@ -80,14 +132,20 @@ const page = () => {
     );
   };
 
+  const xpProgress = (
+    (progress.currentXP / getTargetXpByLevel(progress.level)) *
+    100
+  ).toFixed();
+
   //TODO: remove
   useEffect(() => {
     console.log("tasks:", tasks);
+    console.log("current xp:", progress.currentXP);
   }, [tasks]);
 
   return (
     <div>
-      <Container maxWidth="md" sx={{ py: 8 }}>
+      <Container maxWidth="lg" sx={{ py: 8 }}>
         {/* Title */}
         <Typography
           sx={{
@@ -165,7 +223,7 @@ const page = () => {
                   Total XP
                 </Typography>
                 <Typography sx={{ fontFamily: "rubik", fontSize: 18, mt: 1 }}>
-                  {totalXp}
+                  {progress.totalXP}
                 </Typography>
               </div>
             </Paper>
@@ -219,7 +277,7 @@ const page = () => {
                   Completed
                 </Typography>
                 <Typography sx={{ fontFamily: "rubik", fontSize: 18, mt: 1 }}>
-                  0 Tasks
+                  {`${tasks.filter((t) => t.completed).length} Tasks`}
                 </Typography>
               </div>
             </Paper>
@@ -246,25 +304,29 @@ const page = () => {
           <div className="flex justify-between items-center w-full">
             <div className="flex gap-4">
               {/* Level Icon */}
-              <div className="border-2 font-medium border-primary text-primary rounded-lg size-12 text-center flex justify-center items-center text-2xl">
-                0
+              <div className="border-2 font-medium border-primary text-primary rounded-full size-12 text-center flex justify-center items-center text-2xl">
+                {progress.level}
               </div>
               {/* Current Level + XP to Next Level */}
               <div>
-                <p className="font-semibold">{`Level ${level}`}</p>
-                <p className="text-gray-600">0 / 100 XP</p>
+                <p className="font-semibold">{`Level ${progress.level}`}</p>
+                <p className="text-gray-600">{`${
+                  progress.currentXP
+                } / ${getTargetXpByLevel(progress.level)} XP`}</p>
               </div>
             </div>
             {/* Remaining XP to Next Level */}
             <div className="font-medium self-end text-primary">
-              100 XP to Level 1
+              {`${
+                getTargetXpByLevel(progress.level) - progress.currentXP
+              } XP to Level ${progress.level + 1}`}
             </div>
           </div>
 
           <div className="h-1.5 bg-gray-200 w-full rounded-full overflow-hidden">
             <div
               className="h-full bg-primary transition-all duration-300"
-              style={{ width: "20%" }}
+              style={{ width: `${xpProgress}%` }}
             />
           </div>
         </Paper>
@@ -330,7 +392,11 @@ const page = () => {
                   difficulty={task.difficulty}
                   xp={task.xp}
                   status={task.status}
-                  onToggleCompletion={() => handleToggleCompletion(task.id)}
+                  completed={task.completed}
+                  onToggleCompletion={() => {
+                    handleToggleCompletion(task.id);
+                    handleCalcXp(task.id, !task.completed);
+                  }}
                   onEdit={() => {
                     setSelectedTaskId(task.id);
                     setOpenEditTaskDialog(true);

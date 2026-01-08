@@ -5,8 +5,9 @@ import {
   Status,
   STATUSES,
 } from "@/lib/enums";
+import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import { IoClose } from "react-icons/io5";
-import { MdCheckCircle, MdOutlineCircle } from "react-icons/md";
+import { MdOutlineCircle } from "react-icons/md";
 
 type TaskCardProps = {
   title?: string;
@@ -38,7 +39,7 @@ export const TaskCard = ({
     <div className="border border-gray-300 rounded-xl p-4 flex justify-between items-center font-rubik">
       <div className="flex gap-2 items-center justify-center">
         {completed ? (
-          <MdCheckCircle
+          <IoMdCheckmarkCircleOutline
             className="text-2xl text-tertiary cursor-pointer"
             onClick={onToggleCompletion}
           />
