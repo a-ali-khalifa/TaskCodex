@@ -33,11 +33,13 @@ export default function Navbar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={
-                  isActive
-                    ? "text-primary font-semibold"
-                    : "text-black hover:text-primary transition-colors"
-                }
+                className={`
+                  ${
+                    isActive
+                      ? "text-primary font-semibold transition-all [duration-250]"
+                      : "text-black hover:text-primary transition-all duration-[250]"
+                  }
+                `}
               >
                 {item.label}
               </Link>
@@ -48,7 +50,7 @@ export default function Navbar() {
             {toggleDarkMode ? (
               <></>
             ) : (
-              <MdOutlineDarkMode className="text-lg hover:text-primary" />
+              <MdOutlineDarkMode className="text-lg hover:text-primary transition-all duration-[250]" />
             )}
           </button>
         </div>
