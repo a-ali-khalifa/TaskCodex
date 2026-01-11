@@ -136,14 +136,20 @@ export default function EditTaskDialogProps({
               value={taskData.status}
               label="Status"
               onChange={(e) =>
-                setTaskData({ ...taskData, status: e.target.value })
+                setTaskData({
+                  ...taskData,
+                  status: e.target.value,
+                })
               }
             >
-              {Object.entries(STATUSES).map(([key, status]) => (
-                <MenuItem key={key} value={key}>
-                  {status.label}
-                </MenuItem>
-              ))}
+              {Object.entries(STATUSES).map(
+                ([key, status]) =>
+                  key !== "COMPLETED" && (
+                    <MenuItem key={key} value={key}>
+                      {status.label}
+                    </MenuItem>
+                  )
+              )}
             </Select>
           </FormControl>
 

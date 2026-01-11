@@ -17,77 +17,96 @@ import {
   IoCheckmarkDoneOutline,
   IoEyeOffOutline,
   IoEyeOutline,
+  IoFilterOutline,
   IoVolumeMedium,
   IoVolumeMute,
 } from "react-icons/io5";
 
-const page = () => {
-  // STATE VARIABLES
-  //  INFO
-  const [username, setUsername] = useState<string>("");
+export default function DashboardPage() {
+  // ========================================
+  // STATE - User & Tasks
+  // ========================================
+  const [username, setUsername] = useState<string>("Ahmed");
   const [tasks, setTasks] = useState<Task[]>([]);
   const [progress, setProgress] = useState<UserProgress>({
     level: 1,
     currentXP: 0,
     totalXP: 0,
   });
-
-  //  STATS
   const [streak, setStreak] = useState(0);
+  const [recentlyCompleted, setRecentlyCompleted] = useState<Task[]>([]);
 
-  //  OTHERS
-  const [hideStats, setHideStats] = useState<boolean>(false); //toggle stats box
-  const [isSoundMuted, setIsSoundMuted] = useState<boolean>(false); //toggle sound (level up, new task, streak)
-
-  const [openAddTaskDialog, setOpenAddTaskDialog] = useState<boolean>(false); //toggle dialog for adding New Task
-  const [openEditTaskDialog, setOpenEditTaskDialog] = useState<boolean>(false); //toggle dialog for Editting Task
-  const [openDeleteTaskDialog, setOpenDeleteTaskDialog] =
-    useState<boolean>(false); //toggle dialog for Delete Confirmation
-
+  // ========================================
+  // STATE - UI Controls
+  // ========================================
+  const [isStatsHidden, setIsStatsHidden] = useState(false);
+  const [isSoundMuted, setIsSoundMuted] = useState(false);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
-  //FUNCTIONS
-  const updateXp = (taskXP: number, isAdd: boolean = true) => {
-    setProgress((prev) => {
-      const newCurrentXP = isAdd
-        ? prev.currentXP + taskXP
-        : taskXP >= prev.currentXP
-        ? 0
-        : prev.currentXP - taskXP;
-      const newTotalXP = isAdd ? prev.totalXP + taskXP : prev.totalXP - taskXP;
-      const xpNeeded = getTargetXpByLevel(prev.level);
+  // ========================================
+  // COMPUTED VALUES
+  // ========================================
+  const completedTasksCount = tasks.filter((t) => t.completed).length;
+  const todoTasksCount = tasks.filter((t) => t.status === "TODO").length;
+  const inProgressTasksCount = tasks.filter(
+    (t) => t.status === "IN_PROGRESS"
+  ).length;
+  const xpNeededForNextLevel = calculateXPNeeded(progress.level);
+  const xpProgressPercentage = (
+    (progress.currentXP / xpNeededForNextLevel) *
+    100
+  ).toFixed(0);
 
-      // Check if leveled up
+  // ========================================
+  // HELPER FUNCTIONS
+  // ========================================
+  function calculateXPNeeded(level: number): number {
+    return Math.floor(100 * Math.pow(level, 1.5));
+  }
+
+  function updateProgress(xpChange: number, isGaining: boolean = true) {
+    setProgress((prev) => {
+      const newCurrentXP = isGaining
+        ? prev.currentXP + xpChange
+        : Math.max(0, prev.currentXP - xpChange);
+
+      const newTotalXP = isGaining
+        ? prev.totalXP + xpChange
+        : prev.totalXP - xpChange;
+
+      const xpNeeded = calculateXPNeeded(prev.level);
+
+      // Check for level up
       if (newCurrentXP >= xpNeeded) {
         const overflow = newCurrentXP - xpNeeded;
         return {
           level: prev.level + 1,
-          currentXP: overflow, // Carry over extra XP
+          currentXP: overflow,
           totalXP: newTotalXP,
         };
       }
 
-      // Normal XP gain
       return {
         ...prev,
         currentXP: newCurrentXP,
         totalXP: newTotalXP,
       };
     });
-  };
+  }
 
-  const getTargetXpByLevel = (currentLevel: number): number => {
-    const target = Math.floor(100 * Math.pow(currentLevel, 1.5));
-    return target;
-  };
-
-  const handleAddTask = (title: string, difficulty: Difficulty) => {
+  // ========================================
+  // TASK HANDLERS
+  // ========================================
+  function handleAddTask(title: string, difficulty: Difficulty) {
     const newTask: Task = {
-      id: (Math.random() * 10000).toString(),
-      title: title,
+      id: Date.now().toString(),
+      title,
       category: "",
       description: "",
-      difficulty: difficulty,
+      difficulty,
       xp: DIFFICULTIES[difficulty].xp,
       status: "TODO",
       createdAt: new Date().toISOString(),
@@ -95,58 +114,89 @@ const page = () => {
       completedAt: null,
       dueDate: "",
     };
-    setTasks([...tasks, newTask]);
-    console.log("Created task: ", newTask);
-  };
 
-  const handleCalcXp = (id: string, isAdd: boolean = true) => {
-    const taskXp = tasks.find((t) => t.id === id)!.xp;
+    setTasks((prev) => [...prev, newTask]);
+    console.log("Task created:", newTask);
+  }
 
-    // If isAdd is true: add values.
-    // If isAdd is false: subtract task xp from current. If task xp is more than current, then current just goes down to 0 (not negative).
-    updateXp(taskXp!, isAdd);
-  };
+  function handleToggleCompletion(taskId: string) {
+    const task = tasks.find((t) => t.id === taskId);
+    if (!task) return;
 
-  const handleToggleCompletion = (id: string) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === id
+    const isCompleting = !task.completed;
+
+    // Update task completion status
+    setTasks((prev) =>
+      prev.map((t) =>
+        t.id === taskId
           ? {
-              ...task,
-              status: task.completed ? "TODO" : "COMPLETED",
-              completed: !task.completed,
+              ...t,
+              status: isCompleting ? "COMPLETED" : "TODO",
+              completed: isCompleting,
+              completedAt: isCompleting ? new Date().toISOString() : null,
             }
-          : task
+          : t
       )
     );
-  };
 
-  const handleDelete = (taskId: string) => {
-    const updatedTasks = tasks.filter((task) => taskId !== task.id);
-    setTasks(updatedTasks);
-  };
+    // Update XP
+    updateProgress(task.xp!, isCompleting);
+  }
 
-  const handleUpdateTask = (id: string, updatedData: Partial<Task>) => {
-    setTasks(
-      tasks.map((task) => (task.id === id ? { ...task, ...updatedData } : task))
+  function handleUpdateTask(taskId: string, updatedData: Partial<Task>) {
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.id === taskId ? { ...task, ...updatedData } : task
+      )
     );
-  };
+  }
 
-  const xpProgress = (
-    (progress.currentXP / getTargetXpByLevel(progress.level)) *
-    100
-  ).toFixed();
+  function handleDeleteTask(taskId: string) {
+    setTasks((prev) => prev.filter((task) => task.id !== taskId));
+  }
 
-  //TODO: remove
+  function moveToRecentlyCompleted(taskId: string) {
+    const task = tasks.find((t) => t.id === taskId);
+    if (task) {
+      setRecentlyCompleted((prev) => [task, ...prev].slice(0, 5)); // Keep only last 5
+    }
+  }
+
+  // ========================================
+  // UI EVENT HANDLERS
+  // ========================================
+  function handleEditClick(taskId: string) {
+    setSelectedTaskId(taskId);
+    setIsEditDialogOpen(true);
+  }
+
+  function handleDeleteClick(taskId: string) {
+    setSelectedTaskId(taskId);
+    setIsDeleteDialogOpen(true);
+  }
+
+  function handleDeleteConfirm() {
+    if (selectedTaskId) {
+      handleDeleteTask(selectedTaskId);
+      setSelectedTaskId(null);
+      setIsDeleteDialogOpen(false);
+    }
+  }
+
+  // ========================================
+  // DEBUG (Remove in production)
+  // ========================================
   useEffect(() => {
-    console.log("tasks:", tasks);
-    console.log("current xp:", progress.currentXP);
+    console.log("Tasks:", tasks);
   }, [tasks]);
 
+  // ========================================
+  // RENDER
+  // ========================================
   return (
     <div>
       <Container maxWidth="lg" sx={{ py: 8 }}>
-        {/* Title */}
+        {/* ===== HEADER ===== */}
         <Typography
           sx={{
             fontSize: 32,
@@ -154,9 +204,9 @@ const page = () => {
             fontFamily: "rubik",
           }}
         >
-          {/* Tasks */}
-          {`Welcome, Ahmed 👋`}
+          {`Welcome, ${username} 👋`}
         </Typography>
+
         <div className="flex justify-between items-center">
           <Typography
             sx={{
@@ -169,46 +219,47 @@ const page = () => {
             Complete tasks to level up!
           </Typography>
 
-          {/* SETTINGS / CONTROL BUTTONS */}
+          {/* ===== CONTROL BUTTONS ===== */}
           <div className="flex gap-2">
-            {/* SHOW / HIDE STATS */}
+            {/* Toggle Stats Visibility */}
             <button
               className="rounded-full hover:bg-black/10 p-3 cursor-pointer flex justify-center items-center text-center transition-all duration-200"
-              onClick={() => setHideStats(!hideStats)}
-              title={!hideStats ? "Hide Stats" : "Show Stats"}
+              onClick={() => setIsStatsHidden(!isStatsHidden)}
+              title={isStatsHidden ? "Show Stats" : "Hide Stats"}
+              aria-label={isStatsHidden ? "Show Stats" : "Hide Stats"}
             >
-              {hideStats ? (
-                <IoEyeOffOutline className="text-2xl self-center" />
+              {isStatsHidden ? (
+                <IoEyeOffOutline className="text-2xl" />
               ) : (
-                <IoEyeOutline className="text-2xl self-center" />
+                <IoEyeOutline className="text-2xl" />
               )}
             </button>
-            {/* ENABLE / MUTE SOUND */}
+
+            {/* Toggle Sound */}
             <button
               className="rounded-full hover:bg-black/10 p-3 cursor-pointer flex justify-center items-center text-center transition-all duration-200"
               onClick={() => setIsSoundMuted(!isSoundMuted)}
-              title={!isSoundMuted ? "Mute Sound" : "Enable Sound"}
+              title={isSoundMuted ? "Enable Sound" : "Mute Sound"}
+              aria-label={isSoundMuted ? "Enable Sound" : "Mute Sound"}
             >
               {isSoundMuted ? (
-                <IoVolumeMute className="text-2xl self-center" />
+                <IoVolumeMute className="text-2xl" />
               ) : (
-                <IoVolumeMedium className="text-2xl self-center" />
+                <IoVolumeMedium className="text-2xl" />
               )}
             </button>
           </div>
         </div>
 
-        {/* STATS */}
-        {!hideStats && (
+        {/* ===== STATS CARDS ===== */}
+        {!isStatsHidden && (
           <div className="flex mt-2 mb-6 gap-2">
-            {/* XP */}
+            {/* Total XP */}
             <Paper
               elevation={3}
               sx={{
                 p: 5,
                 borderRadius: 4,
-                textAlign: "start",
-                backdropFilter: "blur(8px)",
                 flex: 1,
                 display: "flex",
                 alignItems: "center",
@@ -228,14 +279,12 @@ const page = () => {
               </div>
             </Paper>
 
-            {/* STREAK */}
+            {/* Streak */}
             <Paper
               elevation={3}
               sx={{
                 p: 5,
                 borderRadius: 4,
-                textAlign: "start",
-                backdropFilter: "blur(8px)",
                 flex: 1,
                 display: "flex",
                 alignItems: "center",
@@ -255,14 +304,12 @@ const page = () => {
               </div>
             </Paper>
 
-            {/* COMPLETED TASKS */}
+            {/* Completed Tasks */}
             <Paper
               elevation={3}
               sx={{
                 p: 5,
                 borderRadius: 4,
-                textAlign: "start",
-                backdropFilter: "blur(8px)",
                 flex: 1,
                 display: "flex",
                 alignItems: "center",
@@ -277,101 +324,99 @@ const page = () => {
                   Completed
                 </Typography>
                 <Typography sx={{ fontFamily: "rubik", fontSize: 18, mt: 1 }}>
-                  {`${tasks.filter((t) => t.completed).length} Tasks`}
+                  {`${completedTasksCount} Tasks`}
                 </Typography>
               </div>
             </Paper>
           </div>
         )}
-        {/* LEVEL PROGRESSION */}
+
+        {/* ===== LEVEL PROGRESSION BAR ===== */}
         <Paper
           elevation={3}
           sx={{
             mt: 2,
             p: 4,
             borderRadius: 5,
-            textAlign: "start",
-            backdropFilter: "blur(8px)",
             display: "flex",
             flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
             gap: 1.5,
-            fontWeight: 400,
             fontFamily: "rubik",
           }}
         >
           <div className="flex justify-between items-center w-full">
             <div className="flex gap-4">
-              {/* Level Icon */}
-              <div className="border-2 font-medium border-primary text-primary rounded-full size-12 text-center flex justify-center items-center text-2xl">
+              {/* Level Badge */}
+              <div className="border-2 font-medium border-primary text-primary rounded-full size-12 flex justify-center items-center text-2xl">
                 {progress.level}
               </div>
-              {/* Current Level + XP to Next Level */}
+
+              {/* Level Info */}
               <div>
                 <p className="font-semibold">{`Level ${progress.level}`}</p>
-                <p className="text-gray-600">{`${
-                  progress.currentXP
-                } / ${getTargetXpByLevel(progress.level)} XP`}</p>
+                <p className="text-gray-600">
+                  {`${progress.currentXP} / ${xpNeededForNextLevel} XP`}
+                </p>
               </div>
             </div>
-            {/* Remaining XP to Next Level */}
+
+            {/* XP Remaining */}
             <div className="font-medium self-end text-primary">
-              {`${
-                getTargetXpByLevel(progress.level) - progress.currentXP
-              } XP to Level ${progress.level + 1}`}
+              {`${xpNeededForNextLevel - progress.currentXP} XP to Level ${
+                progress.level + 1
+              }`}
             </div>
           </div>
 
+          {/* Progress Bar */}
           <div className="h-1.5 bg-gray-200 w-full rounded-full overflow-hidden">
             <div
               className="h-full bg-primary transition-all duration-300"
-              style={{ width: `${xpProgress}%` }}
+              style={{ width: `${xpProgressPercentage}%` }}
             />
           </div>
         </Paper>
 
-        {/* TASKS  */}
-
-        {/* {tasks.length != 0 ? (
-          //TODO: Show Icon & Message. Prompt to add tasks.
-          <div>no tasks</div>
-        ) : ( */}
+        {/* ===== TASKS SECTION ===== */}
         <Paper
           elevation={3}
           sx={{
             my: 4,
             p: 3,
             borderRadius: 10,
-            textAlign: "start",
-            backdropFilter: "blur(8px)",
-            // display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
             fontFamily: "rubik",
           }}
         >
+          {/* Header */}
           <div className="flex justify-between w-full p-2 items-center">
             <div>
               <h1 className="text-2xl">All Tasks</h1>
-              <p className="text-sm text-gray-600">{`${tasks.length} Total ● ${
-                tasks.filter((t) => t.status === "TODO").length
-              } ${STATUSES.TODO.label} ● ${
-                tasks.filter((t) => t.status === "IN_PROGRESS").length
-              } ${STATUSES.IN_PROGRESS.label}`}</p>
+              <p className="text-sm text-gray-600">
+                {`${tasks.length} Total // ${todoTasksCount} ${STATUSES.TODO.label} // ${inProgressTasksCount} ${STATUSES.IN_PROGRESS.label}`}
+              </p>
             </div>
-            <div className="relative">
+
+            <div className="flex gap-3">
+              {/* Filter Button */}
+              <Button
+                variant="ghost"
+                icon={<IoFilterOutline className="text-2xl text-primary" />}
+                label="Filter"
+                onClick={() => {}}
+              />
+              {/* Add Task Button */}
               <Button
                 icon={<IoAdd className="text-2xl" />}
                 label="Add Task"
-                onClick={() => setOpenAddTaskDialog(true)}
+                onClick={() => setIsAddDialogOpen(true)}
               />
             </div>
           </div>
 
           <hr className="my-2 text-gray-200" />
 
-          {tasks.length == 0 ? (
+          {/* Task List or Empty State */}
+          {tasks.length === 0 ? (
             <Typography
               sx={{
                 pt: 1,
@@ -393,70 +438,41 @@ const page = () => {
                   xp={task.xp}
                   status={task.status}
                   completed={task.completed}
-                  onToggleCompletion={() => {
-                    handleToggleCompletion(task.id);
-                    handleCalcXp(task.id, !task.completed);
-                  }}
-                  onEdit={() => {
-                    setSelectedTaskId(task.id);
-                    setOpenEditTaskDialog(true);
-                  }}
-                  onDelete={() => {
-                    setSelectedTaskId(task.id);
-                    setOpenDeleteTaskDialog(true);
-                  }}
+                  onToggleCompletion={() => handleToggleCompletion(task.id)}
+                  onEdit={() => handleEditClick(task.id)}
+                  onDelete={() => handleDeleteClick(task.id)}
                 />
               ))}
             </div>
           )}
         </Paper>
-        {/* )} */}
 
-        {/* EDIT TASK */}
+        {/* ===== DIALOGS ===== */}
+
+        {/* Edit Task Dialog */}
         <EditTaskDialog
-          isOpen={openEditTaskDialog}
-          onClose={() => {
-            setOpenEditTaskDialog(false);
-          }}
+          isOpen={isEditDialogOpen}
+          onClose={() => setIsEditDialogOpen(false)}
           taskId={selectedTaskId}
           tasks={tasks}
           onEdit={handleUpdateTask}
         />
 
-        {/* DELETE TASK */}
+        {/* Delete Task Dialog */}
         <DeleteTaskDialog
-          isOpen={openDeleteTaskDialog}
-          onClose={() => {
-            setOpenDeleteTaskDialog(false);
-          }}
-          onDelete={() => {
-            handleDelete(selectedTaskId!);
-            setSelectedTaskId(null);
-            setOpenDeleteTaskDialog(false);
-          }}
+          isOpen={isDeleteDialogOpen}
+          onClose={() => setIsDeleteDialogOpen(false)}
+          onDelete={handleDeleteConfirm}
         />
 
-        {/* NEW TASK */}
-        {/* V1 */}
+        {/* Add Task Dialog */}
         <AddTaskDialog
           tasks={tasks}
           setTasks={setTasks}
-          isOpen={openAddTaskDialog}
-          onClose={() => {
-            setOpenAddTaskDialog(false);
-          }}
+          isOpen={isAddDialogOpen}
+          onClose={() => setIsAddDialogOpen(false)}
         />
-        {/* V2 */}
-        {/* <AddTask
-          isOpen={openAddTaskDialog}
-          onClose={() => {
-            setOpenAddTaskDialog(false);
-          }}
-          onCreateTask={handleCreateTask}
-        /> */}
       </Container>
     </div>
   );
-};
-
-export default page;
+}
