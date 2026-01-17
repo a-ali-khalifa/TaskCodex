@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { MdOutlineDarkMode } from "react-icons/md";
+import Logo from "./Logo";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -20,8 +21,8 @@ export default function Navbar() {
     <nav className="bg-white sticky">
       <div className="mx-auto flex justify-evenly items-center rounded-4xl h-12 transition-colors duration-200">
         {/* Logo / App Name */}
-        <Link href="/" className="text-xl font-[poppins]">
-          taskCodex
+        <Link href="/">
+          <Logo size={24} className="" />
         </Link>
 
         {/* Nav Items */}
