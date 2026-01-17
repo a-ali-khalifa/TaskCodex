@@ -21,6 +21,9 @@ const poppins = Poppins({
 export const metadata = {
   title: "Task Codex",
   description: "Gamified productivity for real-life tasks.",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({

@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/Button";
 import { Container } from "@mui/material";
+import Link from "next/link";
 
 export default function HomePage() {
   return (
@@ -25,7 +26,9 @@ export default function HomePage() {
             points, track your growth and celebrate each win.
           </p>
 
-          <Button label="Start Leveling 🚀" size="lg" variant="outline" />
+          <Link href={"/dashboard"}>
+            <Button label="Start Leveling 🚀" size="lg" variant="outline" />
+          </Link>
         </section>
         <section id="features"></section>
       </Container>
