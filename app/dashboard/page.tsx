@@ -185,6 +185,16 @@ export default function DashboardPage() {
       setIsDeleteDialogOpen(false);
     }
   }
+  // Detect multiple level-ups (i.e., level 1 -> 3)
+  useEffect(() => {
+    if (progress.currentXP > calculateXPNeeded(progress.level)) {
+      setProgress({
+        level: progress.level + 1,
+        currentXP: progress.currentXP - calculateXPNeeded(progress.level),
+        totalXP: progress.totalXP,
+      });
+    }
+  }, [progress.currentXP]);
 
   // Detect level up for animation
   useEffect(() => {
