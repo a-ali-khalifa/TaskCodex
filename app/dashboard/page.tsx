@@ -4,6 +4,7 @@ import AddTaskDialog from "@/components/AddTaskDialog";
 import { Button } from "@/components/Button";
 import DeleteTaskDialog from "@/components/DeleteTaskDialog";
 import EditTaskDialog from "@/components/EditTaskDialog";
+import LevelUpModal from "@/components/LevelUpModal";
 import { TaskCard } from "@/components/TaskCard";
 import { DIFFICULTIES, Difficulty, STATUSES } from "@/lib/enums";
 import { Task } from "@/types/Task";
@@ -35,6 +36,8 @@ export default function DashboardPage() {
   });
   const [streak, setStreak] = useState(0);
   const [recentlyCompleted, setRecentlyCompleted] = useState<Task[]>([]);
+  const [showLevelUp, setShowLevelUp] = useState(false);
+  const [previousLevel, setPreviousLevel] = useState(1);
 
   // ========================================
   // STATE - UI Controls
@@ -52,7 +55,7 @@ export default function DashboardPage() {
   const completedTasksCount = tasks.filter((t) => t.completed).length;
   const todoTasksCount = tasks.filter((t) => t.status === "TODO").length;
   const inProgressTasksCount = tasks.filter(
-    (t) => t.status === "IN_PROGRESS"
+    (t) => t.status === "IN_PROGRESS",
   ).length;
   const xpNeededForNextLevel = calculateXPNeeded(progress.level);
   const xpProgressPercentage = (
@@ -135,8 +138,8 @@ export default function DashboardPage() {
               completed: isCompleting,
               completedAt: isCompleting ? new Date().toISOString() : null,
             }
-          : t
-      )
+          : t,
+      ),
     );
 
     // Update XP
@@ -146,8 +149,8 @@ export default function DashboardPage() {
   function handleUpdateTask(taskId: string, updatedData: Partial<Task>) {
     setTasks((prev) =>
       prev.map((task) =>
-        task.id === taskId ? { ...task, ...updatedData } : task
-      )
+        task.id === taskId ? { ...task, ...updatedData } : task,
+      ),
     );
   }
 
@@ -183,9 +186,15 @@ export default function DashboardPage() {
     }
   }
 
-  // ========================================
-  // DEBUG (Remove in production)
-  // ========================================
+  // Detect level up for animation
+  useEffect(() => {
+    if (progress.level > previousLevel) {
+      setShowLevelUp(true);
+      setPreviousLevel(progress.level);
+    }
+  }, [progress.level, previousLevel]);
+
+  // DEBUG (Todo: Remove in production)
   useEffect(() => {
     console.log("Tasks:", tasks);
   }, [tasks]);
@@ -446,6 +455,12 @@ export default function DashboardPage() {
             </div>
           )}
         </Paper>
+
+        <LevelUpModal
+          isOpen={showLevelUp}
+          onClose={() => setShowLevelUp(false)}
+          level={progress.level}
+        />
 
         {/* ===== DIALOGS ===== */}
 

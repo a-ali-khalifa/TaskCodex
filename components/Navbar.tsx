@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { MdOutlineDarkMode } from "react-icons/md";
-import Logo from "./Logo";
+import Logo from "@/components/Logo";
 
 export default function Navbar() {
   const pathname = usePathname();
