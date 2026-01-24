@@ -35,9 +35,9 @@ export const Button = ({
       primary:
         "bg-primary text-white hover:bg-[#2f4fcc] shadow-lg shadow-primary/25",
       secondary:
-        "bg-secondary text-white hover:bg-[#3a4250] shadow-lg shadow-secondary/25",
+        "bg-secondary/90 text-white hover:bg-secondary shadow-lg shadow-secondary/25",
       tertiary:
-        "bg-tertiary text-white hover:bg-[#3a4250] shadow-lg shadow-tertiary/25",
+        "bg-tertiary/80 text-white hover:bg-tertiary shadow-lg shadow-tertiary/25",
       // success:
       //   "bg-success text-white hover:bg-[#028a1b] shadow-lg shadow-success/25",
       // danger:
@@ -47,15 +47,14 @@ export const Button = ({
       primary:
         "bg-transparent text-primary border-2 border-primary hover:bg-primary hover:text-white",
       secondary:
-        "bg-transparent text-secondary border-2 border-secondary hover:bg-secondary hover:text-white",
+        "bg-transparent text-secondary/90 border-2 border-secondary/90 hover:bg-secondary hover:text-white",
       tertiary:
-        "bg-tertiary text-white hover:bg-[#3a4250] shadow-lg shadow-tertiary/25",
+        "bg-transparent text-tertiary/90 border-2 border-tertiary/0- hover:bg-tertiary hover:text-white",
     },
     ghost: {
       primary: "bg-transparent text-primary hover:bg-primary/10",
       secondary: "bg-transparent text-secondary hover:bg-secondary/10",
-      tertiary:
-        "bg-tertiary text-white hover:bg-[#3a4250] shadow-lg shadow-tertiary/25",
+      tertiary: "bg-transparent text-tertiary hover:bg-tertiary/10",
     },
   };
 

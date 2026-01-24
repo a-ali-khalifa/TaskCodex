@@ -15,12 +15,18 @@ const DeleteTaskDialog = ({ isOpen, onClose, onDelete }: any) => {
           Are you sure you would like to delete this task?
         </p>
         <div className="flex gap-2 justify-between items-center">
-          <Button label="Confirm" onClick={onDelete} className="flex-1" />
           <Button
             label="Cancel"
             variant="outline"
+            color="secondary"
             onClick={onClose}
             className="flex-1"
+          />
+          <Button
+            label="Delete"
+            onClick={onDelete}
+            className="flex-1"
+            color="secondary"
           />
         </div>
       </div>

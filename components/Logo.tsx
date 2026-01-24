@@ -15,7 +15,7 @@ export default function Logo({
 }: LogoProps) {
   return (
     <div className={`flex items-center gap-3 ${className}`}>
-      {showText && <span className="text-xl font-poppins">TaskCodex</span>}
+      {showText && <span className="text-xl font-rubik">taskCodex</span>}
       <Image
         // color="blue"
         src={LogoSVG}

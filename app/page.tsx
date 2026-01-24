@@ -22,13 +22,17 @@ export default function HomePage() {
           </p>
 
           <p className="text-2xl text-black/60 m-6">
-            Transform your to-do list into a leveling journey. Gain experience
-            points, track your growth and celebrate each win.
+            Transform your to-do list into a fun leveling journey. Gain
+            experience points, track your growth and celebrate each win.
           </p>
 
           <Link href={"/dashboard"}>
             <Button label="Start Leveling 🚀" size="lg" variant="outline" />
           </Link>
+
+          {/* <Link href={"/dashboard"}>
+            <Button label="Learn more 📖" size="lg" />
+          </Link> */}
         </section>
         <section id="features"></section>
       </Container>
