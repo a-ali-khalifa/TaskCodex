@@ -35,7 +35,7 @@ export const Button = ({
       primary:
         "bg-primary text-white hover:bg-[#2f4fcc] shadow-lg shadow-primary/25",
       secondary:
-        "bg-secondary/90 text-white hover:bg-secondary shadow-lg shadow-secondary/25",
+        "bg-secondary/80 text-white hover:bg-secondary shadow-lg shadow-secondary/25",
       tertiary:
         "bg-tertiary/80 text-white hover:bg-tertiary shadow-lg shadow-tertiary/25",
       // success:
@@ -47,7 +47,7 @@ export const Button = ({
       primary:
         "bg-transparent text-primary border-2 border-primary hover:bg-primary hover:text-white",
       secondary:
-        "bg-transparent text-secondary/90 border-2 border-secondary/90 hover:bg-secondary hover:text-white",
+        "bg-transparent text-secondary/80 border-2 border-secondary/90 hover:bg-secondary hover:text-white",
       tertiary:
         "bg-transparent text-tertiary/90 border-2 border-tertiary/0- hover:bg-tertiary hover:text-white",
     },
