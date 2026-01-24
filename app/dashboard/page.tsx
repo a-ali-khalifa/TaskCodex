@@ -157,6 +157,31 @@ export default function DashboardPage() {
     updateProgress(task.xp!, isCompleting);
   }
 
+  function handleToggleStatus(taskId: string) {
+    const task = tasks.find((t) => t.id === taskId);
+    if (!task) return;
+
+    //Disable toggle if task's completed
+    const statusChanged: boolean = !(task.status === "COMPLETED");
+
+    setTasks((prev) =>
+      prev.map((t) =>
+        t.id === taskId
+          ? {
+              ...t,
+              status: statusChanged
+                ? t.status === "TODO"
+                  ? "IN_PROGRESS"
+                  : "TODO"
+                : t.status,
+            }
+          : t,
+      ),
+    );
+
+    statusChanged && playAddedTask();
+  }
+
   function handleUpdateTask(taskId: string, updatedData: Partial<Task>) {
     setTasks((prev) =>
       prev.map((task) =>
@@ -478,6 +503,7 @@ export default function DashboardPage() {
                   status={task.status}
                   completed={task.completed}
                   onToggleCompletion={() => handleToggleCompletion(task.id)}
+                    onToggleStatus={() => handleToggleStatus(task.id)}
                   onEdit={() => handleEditClick(task.id)}
                   onDelete={() => handleDeleteClick(task.id)}
                 />

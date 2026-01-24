@@ -19,6 +19,7 @@ type TaskCardProps = {
   status?: Status;
   completed?: boolean;
   onToggleCompletion?: () => void;
+  onToggleStatus?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
 };
@@ -32,6 +33,7 @@ export const TaskCard = ({
   status = "TODO",
   completed = false,
   onToggleCompletion = () => {},
+  onToggleStatus = () => {},
   onEdit = () => {},
   onDelete = () => {},
 }: TaskCardProps) => {
@@ -68,7 +70,10 @@ export const TaskCard = ({
         >
           {`${DIFFICULTIES[difficulty].label} • ${xp} XP`}
         </p>
-        <p className={`text-sm p-2 rounded-lg ${STATUSES[status].style}`}>
+        <p
+          className={`text-sm p-2 rounded-lg cursor-pointer ${STATUSES[status].style}`}
+          onClick={onToggleStatus}
+        >
           {status === "TODO" ? status : STATUSES[status].label}
           {/* "Todo -> TODO" */}
         </p>
