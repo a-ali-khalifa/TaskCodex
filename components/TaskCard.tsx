@@ -55,7 +55,7 @@ export const TaskCard = ({
       </div>
       <div className="flex gap-2">
         {category && (
-          <p className="text-md p-2 bg-yellow-100 rounded-xl text-yellow-700">
+          <p className="text-md p-2 bg-gray-100 rounded-xl text-gray-600">
             {category}
           </p>
         )}
@@ -73,7 +73,7 @@ export const TaskCard = ({
           {/* "Todo -> TODO" */}
         </p>
         <button
-          className="p-2 rounded-full hover:bg-gray-100 transition-all delay-200 ease-in-out cursor-pointer"
+          className="p-2 rounded-full hover:bg-gray-100 transition-all delay-150 ease-in cursor-pointer"
           onClick={onDelete}
         >
           <IoClose className="text-2xl text-gray-400" />

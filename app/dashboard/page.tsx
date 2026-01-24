@@ -343,7 +343,7 @@ export default function DashboardPage() {
                   Completed
                 </Typography>
                 <Typography sx={{ fontFamily: "rubik", fontSize: 18, mt: 1 }}>
-                  {`${completedTasksCount} Tasks`}
+                  {`${completedTasksCount} Task(s)`}
                 </Typography>
               </div>
             </Paper>
@@ -453,6 +453,7 @@ export default function DashboardPage() {
                   key={task.id}
                   title={task.title}
                   description={task.description}
+                  category={task.category}
                   difficulty={task.difficulty}
                   xp={task.xp}
                   status={task.status}
@@ -473,6 +474,14 @@ export default function DashboardPage() {
         />
 
         {/* ===== DIALOGS ===== */}
+
+        {/* Add Task Dialog */}
+        <AddTaskDialog
+          tasks={tasks}
+          setTasks={setTasks}
+          isOpen={isAddDialogOpen}
+          onClose={() => setIsAddDialogOpen(false)}
+        />
 
         {/* Edit Task Dialog */}
         <EditTaskDialog
