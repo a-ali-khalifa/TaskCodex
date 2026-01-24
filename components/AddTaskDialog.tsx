@@ -11,7 +11,8 @@ import {
   TextField,
 } from "@mui/material";
 import { Button } from "@/components/Button";
-import { CATEGORIES, DIFFICULTIES, STATUSES } from "@/lib/enums";
+import { CATEGORIES, DIFFICULTIES, SOUND_PATHS, STATUSES } from "@/lib/enums";
+import { useSound } from "@/lib/useSound";
 
 type AddTaskDialogProps = {
   isOpen: boolean;
@@ -46,6 +47,8 @@ export default function AddTaskDialog({
     "Drink some water 🫗",
   ];
 
+  const playSound = useSound(SOUND_PATHS.TASK_ADDED, 0.15);
+
   const handleSubmit = () => {
     if (!taskData.title.trim()) {
       alert("Task title is required!");
@@ -71,6 +74,9 @@ export default function AddTaskDialog({
       completed: false,
       completedAt: "",
     });
+
+    playSound();
+
     onClose();
   };
 
@@ -115,7 +121,10 @@ export default function AddTaskDialog({
               value={taskData.category}
               label="Category"
               onChange={(e) =>
-                setTaskData({ ...taskData, category: e.target.value })
+                setTaskData({
+                  ...taskData,
+                  category: e.target.value,
+                })
               }
             >
               {Object.values(CATEGORIES).map((category) => (
@@ -171,7 +180,7 @@ export default function AddTaskDialog({
                     <MenuItem key={key} value={key}>
                       {status.label}
                     </MenuItem>
-                  )
+                  ),
               )}
             </Select>
           </FormControl>

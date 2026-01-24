@@ -148,7 +148,7 @@ export default function EditTaskDialogProps({
                     <MenuItem key={key} value={key}>
                       {status.label}
                     </MenuItem>
-                  )
+                  ),
               )}
             </Select>
           </FormControl>

@@ -34,3 +34,11 @@ export const CATEGORIES = {
 } as const;
 
 export type Category = (typeof CATEGORIES)[keyof typeof CATEGORIES];
+
+//SOUNDS
+export const SOUND_PATHS = {
+  TASK_COMPLETE: "/sounds/complete_task.wav",
+  TASK_ADDED: "/sounds/added_task.wav",
+  LEVEL_UP: "/sounds/level_up.mp3",
+  TYPING: "/sounds/type.wav",
+};

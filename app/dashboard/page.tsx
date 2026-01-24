@@ -7,7 +7,8 @@ import EditTaskDialog from "@/components/EditTaskDialog";
 import LevelUpModal from "@/components/LevelUpModal";
 import { TaskCard } from "@/components/TaskCard";
 import WelcomeModal from "@/components/WelcomeModal";
-import { DIFFICULTIES, Difficulty, STATUSES } from "@/lib/enums";
+import { DIFFICULTIES, Difficulty, SOUND_PATHS, STATUSES } from "@/lib/enums";
+import { useSound } from "@/lib/useSound";
 import { Task } from "@/types/Task";
 import { UserProgress } from "@/types/UserProgress";
 import { Container, Paper, Typography } from "@mui/material";
@@ -40,6 +41,8 @@ export default function DashboardPage() {
   const [recentlyCompleted, setRecentlyCompleted] = useState<Task[]>([]);
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [previousLevel, setPreviousLevel] = useState(1);
+  const isFirstVisit = localStorage.getItem("isFirstVisit");
+  const [showOnboarding, setShowOnboarding] = React.useState(!isFirstVisit);
 
   // ========================================
   // STATE - UI Controls
@@ -64,6 +67,9 @@ export default function DashboardPage() {
     (progress.currentXP / xpNeededForNextLevel) *
     100
   ).toFixed(0);
+
+  // Sounds
+  const playCompleteTask = useSound(SOUND_PATHS.TASK_COMPLETE, 0.05);
 
   // ========================================
   // HELPER FUNCTIONS
@@ -143,6 +149,9 @@ export default function DashboardPage() {
           : t,
       ),
     );
+
+    // Sound effect
+    isCompleting && playCompleteTask();
 
     // Update XP
     updateProgress(task.xp!, isCompleting);
@@ -507,14 +516,6 @@ export default function DashboardPage() {
           isOpen={isDeleteDialogOpen}
           onClose={() => setIsDeleteDialogOpen(false)}
           onDelete={handleDeleteConfirm}
-        />
-
-        {/* Add Task Dialog */}
-        <AddTaskDialog
-          tasks={tasks}
-          setTasks={setTasks}
-          isOpen={isAddDialogOpen}
-          onClose={() => setIsAddDialogOpen(false)}
         />
       </Container>
     </div>
