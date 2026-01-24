@@ -6,10 +6,12 @@ import DeleteTaskDialog from "@/components/DeleteTaskDialog";
 import EditTaskDialog from "@/components/EditTaskDialog";
 import LevelUpModal from "@/components/LevelUpModal";
 import { TaskCard } from "@/components/TaskCard";
+import WelcomeModal from "@/components/WelcomeModal";
 import { DIFFICULTIES, Difficulty, STATUSES } from "@/lib/enums";
 import { Task } from "@/types/Task";
 import { UserProgress } from "@/types/UserProgress";
 import { Container, Paper, Typography } from "@mui/material";
+import React from "react";
 import { useState, useEffect } from "react";
 import { FaFireFlameCurved } from "react-icons/fa6";
 import { HiLightningBolt } from "react-icons/hi";
@@ -215,6 +217,9 @@ export default function DashboardPage() {
   return (
     <div>
       <Container maxWidth="lg" sx={{ py: 8 }}>
+        {isFirstVisit && (
+          <WelcomeModal username={username} onComplete={() => {}} />
+        )}
         {/* ===== HEADER ===== */}
         <Typography
           sx={{
@@ -410,9 +415,14 @@ export default function DashboardPage() {
           <div className="flex justify-between w-full p-2 items-center">
             <div>
               <h1 className="text-2xl">All Tasks</h1>
-              <p className="text-sm text-gray-600">
+
+              <span className="text-sm text-gray-600">
                 {`${tasks.length} Total // ${todoTasksCount} ${STATUSES.TODO.label} // ${inProgressTasksCount} ${STATUSES.IN_PROGRESS.label}`}
-              </p>
+              </span>
+
+              {/* <button className="p-1.5 text-sm rounded-2xl hover:bg-gray-200">
+                  Recently completed
+                </button> */}
             </div>
 
             <div className="flex gap-3">
