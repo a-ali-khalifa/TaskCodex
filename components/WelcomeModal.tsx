@@ -64,26 +64,6 @@ const WelcomeModal = ({ onComplete }: WelcomeModalProps) => {
         </div>
       </Paper>
     </Container>
-    // <div className="fixed inset-0 flex items-center justify-center bg-black/50">
-    //   <div className="bg-white p-6 rounded-xl w-80">
-    //     <h2 className="text-lg font-semibold font-rubik">Welcome!</h2>
-    //     <h3 className="text-md mb-3 font-rubik">Please your name</h3>
-    //     <input
-    //       type="text"
-    //       placeholder="Enter your name"
-    //       value={username}
-    //       onChange={(e) => setUsername(e.target.value)}
-    //       className="border p-2 rounded w-full mb-4 font-rubik"
-    //     />
-    //     <Button
-    //       label="Complete"
-    //       onClick={() => {
-    //         localStorage.setItem("username", username!);
-    //         onComplete();
-    //       }}
-    //     />
-    //   </div>
-    // </div>
   );
 };
 
