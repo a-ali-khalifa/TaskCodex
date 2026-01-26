@@ -27,6 +27,8 @@ import {
 } from "react-icons/io5";
 
 export default function DashboardPage() {
+  const savedName = localStorage.getItem("username")!;
+
   // ========================================
   // STATE - User & Tasks
   // ========================================
