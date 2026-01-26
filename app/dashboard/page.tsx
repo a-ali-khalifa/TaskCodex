@@ -30,7 +30,7 @@ export default function DashboardPage() {
   // ========================================
   // STATE - User & Tasks
   // ========================================
-  const [username, setUsername] = useState<string>("Ahmed");
+  const [username, setUsername] = useState<string>(savedName || "");
   const [tasks, setTasks] = useState<Task[]>([]);
   const [progress, setProgress] = useState<UserProgress>({
     level: 1,
@@ -240,6 +240,16 @@ export default function DashboardPage() {
     }
   }, [progress.level, previousLevel]);
 
+  useEffect(() => {
+    // Code here runs only in the browser
+    if (typeof window !== "undefined") {
+      const storedName = localStorage.getItem(username);
+      if (storedName) {
+        setUsername(storedName);
+      }
+    }
+  }, []);
+
   // DEBUG (Todo: Remove in production)
   useEffect(() => {
     console.log("Tasks:", tasks);
@@ -250,6 +260,14 @@ export default function DashboardPage() {
   // ========================================
   return (
     <div>
+      {!username ? (
+        <WelcomeModal
+          onComplete={() => {
+            setUsername(localStorage.getItem("username")!);
+          }}
+          isOpen={!username}
+        />
+      ) : (
       <Container maxWidth="lg" sx={{ py: 8 }}>
         {isFirstVisit && (
           <WelcomeModal username={username} onComplete={() => {}} />
