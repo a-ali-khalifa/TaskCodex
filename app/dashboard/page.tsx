@@ -70,6 +70,7 @@ export default function DashboardPage() {
 
   // Sounds
   const playCompleteTask = useSound(SOUND_PATHS.TASK_COMPLETE, 0.05);
+  const playAddedTask = useSound(SOUND_PATHS.TASK_ADDED, 0.15);
 
   // ========================================
   // HELPER FUNCTIONS
@@ -151,7 +152,7 @@ export default function DashboardPage() {
     );
 
     // Sound effect
-    isCompleting && playCompleteTask();
+    isCompleting && !isSoundMuted && playCompleteTask();
 
     // Update XP
     updateProgress(task.xp!, isCompleting);
@@ -179,7 +180,7 @@ export default function DashboardPage() {
       ),
     );
 
-    statusChanged && playAddedTask();
+    statusChanged && !isSoundMuted && playAddedTask();
   }
 
   function handleUpdateTask(taskId: string, updatedData: Partial<Task>) {
