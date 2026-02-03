@@ -53,6 +53,7 @@ export default function DashboardPage() {
   // ========================================
   // STATE - UI Controls
   // ========================================
+  const [showRecentlyCompleted, setShowRecentlyCompleted] = useState(false);
   const [isStatsHidden, setIsStatsHidden] = useState(false);
   const [isSoundMuted, setIsSoundMuted] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -67,21 +68,21 @@ export default function DashboardPage() {
   const filteredTasks = useMemo(() => {
     let filtered = tasks;
 
-    // Filter by status
+    // By status
     if (activeFilters.status.length > 0) {
       filtered = filtered.filter((task) =>
         activeFilters.status.includes(task.status),
       );
     }
 
-    // Filter by difficulty
+    // By difficulty
     if (activeFilters.difficulty.length > 0) {
       filtered = filtered.filter((task) =>
         activeFilters.difficulty.includes(task.difficulty),
       );
     }
 
-    // Filter by category
+    // By category
     if (activeFilters.category.length > 0) {
       filtered = filtered.filter(
         (task) =>
@@ -108,8 +109,7 @@ export default function DashboardPage() {
     (progress.currentXP / xpNeededForNextLevel) *
     100
   ).toFixed(0);
-  const isFiltered =
-    filteredTasks.length !== tasks.length || activeFilterCount > 0;
+  const isFiltered = activeFilterCount > 0;
 
   // Sounds
   const playCompleteTask = useSound(SOUND_PATHS.TASK_COMPLETE, 0.05);
@@ -193,6 +193,7 @@ export default function DashboardPage() {
               status: isCompleting ? "COMPLETED" : "TODO",
               completed: isCompleting,
               completedAt: isCompleting ? new Date().toISOString() : null,
+              deletionTimer: isCompleting ? Date.now() : undefined, // Start timer; After timer finishes, move to Recently Completed.
             }
           : t,
       ),
@@ -204,6 +205,44 @@ export default function DashboardPage() {
     // Update XP
     updateProgress(task.xp!, isCompleting);
   }
+
+  function handleTimerComplete(taskId: string) {
+    const completedTask = tasks.find((t) => t.id === taskId);
+
+    if (completedTask) {
+      // Add to recently completed (keep only last 5)
+      setRecentlyCompleted((prev) => {
+        const updated = [completedTask, ...prev];
+        return updated.slice(0, 5); // Keep only 5 most recent
+      });
+
+      setTasks((prev) => prev.filter((t) => t.id !== taskId));
+    }
+  }
+
+  const handleUndoCompletion = (taskId: string) => {
+    const task = recentlyCompleted.find((t) => t.id === taskId);
+
+    if (task) {
+      // Move back to tasks
+      setTasks((prev) => [
+        ...prev,
+        {
+          ...task,
+          completed: false,
+          status: "TODO",
+          completedAt: null,
+          deletionTimer: undefined,
+        },
+      ]);
+
+      // Remove from recently completed
+      setRecentlyCompleted((prev) => prev.filter((t) => t.id !== taskId));
+
+      // Remove XP
+      updateProgress(task.xp!, false);
+    }
+  };
 
   function handleToggleStatus(taskId: string) {
     const task = tasks.find((t) => t.id === taskId);
@@ -240,13 +279,6 @@ export default function DashboardPage() {
 
   function handleDeleteTask(taskId: string) {
     setTasks((prev) => prev.filter((task) => task.id !== taskId));
-  }
-
-  function moveToRecentlyCompleted(taskId: string) {
-    const task = tasks.find((t) => t.id === taskId);
-    if (task) {
-      setRecentlyCompleted((prev) => [task, ...prev].slice(0, 5)); // Keep only last 5
-    }
   }
 
   // ========================================
@@ -511,18 +543,24 @@ export default function DashboardPage() {
             {/* Header */}
             <div className="flex justify-between w-full p-2 items-center">
               <div>
-                <h1 className="text-2xl">{`${isFiltered ? `Filtered` : `All`} Tasks`}</h1>
+                <h1 className="text-2xl">{`${showRecentlyCompleted ? "Completed" : isFiltered ? `Filtered` : `All`} Tasks`}</h1>
 
                 <span className="text-sm text-gray-600">
-                  {`${isFiltered ? `${filteredTasks.length} of ${tasks.length}` : tasks.length} Total // ${todoTasksCount} ${STATUSES.TODO.label} // ${inProgressTasksCount} ${STATUSES.IN_PROGRESS.label}`}
+                  {`${showRecentlyCompleted && recentlyCompleted.length > 0 ? `${recentlyCompleted.length}` : isFiltered ? `${filteredTasks.length} of ${tasks.length}` : tasks.length} Total // ${todoTasksCount} ${STATUSES.TODO.label} // ${inProgressTasksCount} ${STATUSES.IN_PROGRESS.label}`}
                 </span>
-
-                {/* <button className="p-1.5 text-sm rounded-2xl hover:bg-gray-200">
-                  Recently completed
-                </button> */}
               </div>
 
               <div className="flex gap-3">
+                <Button
+                  variant="ghost"
+                  icon={
+                    <IoCheckmarkDoneOutline className="text-2xl text-primary" />
+                  }
+                  label="Recently Completed"
+                  onClick={() =>
+                    setShowRecentlyCompleted(!showRecentlyCompleted)
+                  }
+                />
                 {/* Filter Button */}
                 <Button
                   variant="ghost"
@@ -542,42 +580,46 @@ export default function DashboardPage() {
             <hr className="my-2 text-gray-200" />
 
             {/* Task List or Empty State */}
-            {tasks.length === 0 ? (
-              <div
-                className="border-2 rounded-lg border-dashed border-gray-300 p-4 flex items-center cursor-pointer hover:bg-black/5 transition-colors duration-200"
-                onClick={() => setIsAddDialogOpen(true)}
-              >
-                <Typography
-                  sx={{
-                    pt: 1,
-                    fontSize: 16,
-                    fontFamily: "rubik",
-                    color: "#4C5564",
-                  }}
-                >
-                  What would you like to accomplish?
-                </Typography>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-3">
-                {filteredTasks.map((task) => (
+            <div className="flex flex-col gap-3">
+              {showRecentlyCompleted ? (
+                recentlyCompleted.map((task) => (
                   <TaskCard
                     key={task.id}
-                    title={task.title}
-                    description={task.description}
-                    category={task.category}
-                    difficulty={task.difficulty}
-                    xp={task.xp}
-                    status={task.status}
-                    completed={task.completed}
+                    task={task}
+                    onToggleCompletion={() => handleUndoCompletion(task.id)}
+                    onEdit={() => handleEditClick(task.id)}
+                  />
+                ))
+              ) : tasks.length > 0 ? (
+                filteredTasks.map((task) => (
+                  <TaskCard
+                    key={task.id}
+                    task={task}
                     onToggleCompletion={() => handleToggleCompletion(task.id)}
                     onToggleStatus={() => handleToggleStatus(task.id)}
+                    onTimerComplete={handleTimerComplete}
                     onEdit={() => handleEditClick(task.id)}
                     onDelete={() => handleDeleteClick(task.id)}
                   />
-                ))}
-              </div>
-            )}
+                ))
+              ) : (
+                <div
+                  className="border-2 rounded-lg border-dashed border-gray-300 p-4 flex items-center cursor-pointer hover:bg-black/5 transition-colors duration-200"
+                  onClick={() => setIsAddDialogOpen(true)}
+                >
+                  <Typography
+                    sx={{
+                      pt: 1,
+                      fontSize: 16,
+                      fontFamily: "rubik",
+                      color: "#4C5564",
+                    }}
+                  >
+                    What would you like to accomplish?
+                  </Typography>
+                </div>
+              )}
+            </div>
           </Paper>
 
           <LevelUpModal

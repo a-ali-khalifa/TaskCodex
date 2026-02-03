@@ -138,7 +138,7 @@ export default function FilterDialog({
       </div>
 
       {/* Footer */}
-      <div className="flex gap-3">
+      <div className="flex gap-3 mt-2">
         <button
           onClick={clearAll}
           className="flex-1 px-4 py-3 bg-white text-gray-700 rounded-xl font-medium hover:bg-gray-100 transition-colors border border-gray-200"

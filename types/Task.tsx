@@ -12,4 +12,5 @@ export type Task = {
   dueDate?: string;
   completed: boolean;
   completedAt: string | null;
+  deletionTimer?: number; // Time until task is deleted or moved (can be undone before)
 };

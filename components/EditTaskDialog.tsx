@@ -136,6 +136,7 @@ export default function EditTaskDialogProps({
               value={taskData.status}
               label="Status"
               onChange={(e) =>
+                !taskData.completed &&
                 setTaskData({
                   ...taskData,
                   status: e.target.value,
