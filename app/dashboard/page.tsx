@@ -111,10 +111,6 @@ export default function DashboardPage() {
     }
   }, []);
 
-  useEffect(() => {
-    console.log(isSoundMuted);
-  }, [isSoundMuted]);
-
   return (
     <div>
       {!username ? (
