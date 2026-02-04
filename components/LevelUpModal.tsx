@@ -1,7 +1,7 @@
 "use client";
 
 import { SOUND_PATHS } from "@/lib/enums";
-import { useSound } from "@/lib/useSound";
+import { useSound } from "@/lib/hooks/useSound";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { IoSparklesSharp } from "react-icons/io5";
@@ -10,12 +10,14 @@ type LevelUpModalProps = {
   isOpen: boolean;
   onClose: () => void;
   level: number;
+  isMuted?: boolean;
 };
 
 export default function LevelUpModal({
   isOpen,
   onClose,
   level,
+  isMuted = false,
 }: LevelUpModalProps) {
   const [showConfetti, setShowConfetti] = useState(false);
 
@@ -23,7 +25,7 @@ export default function LevelUpModal({
   useEffect(() => {
     if (isOpen) {
       setShowConfetti(true);
-      playSound();
+      if (!isMuted) playSound();
       // Auto-close after 3 seconds
       const timer = setTimeout(() => {
         onClose();

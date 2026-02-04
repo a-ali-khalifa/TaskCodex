@@ -5,7 +5,7 @@ import {
   Status,
   STATUSES,
 } from "@/lib/enums";
-import { useCompletionTimer } from "@/lib/useCompletionTimer";
+import { useCompletionTimer } from "@/lib/hooks/useCompletionTimer";
 import { Task } from "@/types/Task";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import { IoClose } from "react-icons/io5";

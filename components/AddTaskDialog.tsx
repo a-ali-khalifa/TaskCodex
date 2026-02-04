@@ -12,13 +12,14 @@ import {
 } from "@mui/material";
 import { Button } from "@/components/Button";
 import { CATEGORIES, DIFFICULTIES, SOUND_PATHS, STATUSES } from "@/lib/enums";
-import { useSound } from "@/lib/useSound";
+import { useSound } from "@/lib/hooks/useSound";
 
 type AddTaskDialogProps = {
   isOpen: boolean;
   onClose: () => void;
   tasks: Task[];
   setTasks: Dispatch<SetStateAction<Task[]>>;
+  isMuted?: boolean;
 };
 
 export default function AddTaskDialog({
@@ -26,6 +27,7 @@ export default function AddTaskDialog({
   onClose,
   tasks,
   setTasks,
+  isMuted,
 }: AddTaskDialogProps) {
   const [taskData, setTaskData] = useState<Task>({
     id: (Math.random() * 10000).toString(),
@@ -75,7 +77,7 @@ export default function AddTaskDialog({
       completedAt: "",
     });
 
-    playSound();
+    if (!isMuted) playSound();
 
     onClose();
   };

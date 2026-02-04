@@ -1,22 +1,7 @@
 "use client";
 
-import AddTaskDialog from "@/components/AddTaskDialog";
-import { Button } from "@/components/Button";
-import DeleteTaskDialog from "@/components/DeleteTaskDialog";
-import EditTaskDialog from "@/components/EditTaskDialog";
-import FilterDialog, { TaskFilters } from "@/components/FilterDialog";
-import LevelUpModal from "@/components/LevelUpModal";
-import { TaskCard } from "@/components/TaskCard";
-import WelcomeModal from "@/components/WelcomeModal";
-import { DIFFICULTIES, Difficulty, SOUND_PATHS, STATUSES } from "@/lib/enums";
-import { useSound } from "@/lib/useSound";
-import { Task } from "@/types/Task";
-import { UserProgress } from "@/types/UserProgress";
-import { Container, Paper, Typography } from "@mui/material";
-import { useMemo } from "react";
 import { useState, useEffect } from "react";
-import { FaFireFlameCurved } from "react-icons/fa6";
-import { HiLightningBolt } from "react-icons/hi";
+import { Container, Paper, Typography } from "@mui/material";
 import {
   IoAdd,
   IoCheckmarkDoneOutline,
@@ -26,33 +11,30 @@ import {
   IoVolumeMedium,
   IoVolumeMute,
 } from "react-icons/io5";
+import { FaFireFlameCurved } from "react-icons/fa6";
+import { HiLightningBolt } from "react-icons/hi";
+
+import { Button } from "@/components/Button";
+import { TaskCard } from "@/components/TaskCard";
+import AddTaskDialog from "@/components/AddTaskDialog";
+import EditTaskDialog from "@/components/EditTaskDialog";
+import DeleteTaskDialog from "@/components/DeleteTaskDialog";
+import FilterDialog from "@/components/FilterDialog";
+import LevelUpModal from "@/components/LevelUpModal";
+import WelcomeModal from "@/components/WelcomeModal";
+import { STATUSES } from "@/lib/enums";
+
+import { useTaskActions } from "@/lib/hooks/useTaskActions";
+import { useTaskManager } from "@/lib/hooks/useTaskManager";
+import { useTaskStats } from "@/lib/hooks/useTaskStats";
+import { useUserProgress } from "@/lib/hooks/useUserProgress";
 
 export default function DashboardPage() {
-  const savedName = localStorage.getItem("username")!;
-
-  // ========================================
-  // STATE - User & Tasks
-  // ========================================
-  const [username, setUsername] = useState<string>(savedName || "");
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [activeFilters, setActiveFilters] = useState<TaskFilters>({
-    status: [],
-    difficulty: [],
-    category: [],
-  });
-  const [progress, setProgress] = useState<UserProgress>({
-    level: 1,
-    currentXP: 0,
-    totalXP: 0,
-  });
+  // User state
+  const [username, setUsername] = useState<string>("");
   const [streak, setStreak] = useState(0);
-  const [recentlyCompleted, setRecentlyCompleted] = useState<Task[]>([]);
-  const [showLevelUp, setShowLevelUp] = useState(false);
-  const [previousLevel, setPreviousLevel] = useState(1);
 
-  // ========================================
-  // STATE - UI Controls
-  // ========================================
+  // UI state
   const [showRecentlyCompleted, setShowRecentlyCompleted] = useState(false);
   const [isStatsHidden, setIsStatsHidden] = useState(false);
   const [isSoundMuted, setIsSoundMuted] = useState(false);
@@ -62,300 +44,89 @@ export default function DashboardPage() {
   const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
-  // ========================================
-  // COMPUTED VALUES
-  // ========================================
-  const filteredTasks = useMemo(() => {
-    let filtered = tasks;
+  // Custom hooks
+  const {
+    tasks,
+    setTasks,
+    recentlyCompleted,
+    filteredTasks,
+    activeFilters,
+    setActiveFilters,
+    addTask,
+    updateTask,
+    deleteTask,
+    moveToRecentlyCompleted,
+    undoCompletion,
+  } = useTaskManager();
 
-    // By status
-    if (activeFilters.status.length > 0) {
-      filtered = filtered.filter((task) =>
-        activeFilters.status.includes(task.status),
-      );
-    }
+  const {
+    progress,
+    updateProgress,
+    showLevelUp,
+    setShowLevelUp,
+    xpNeeded,
+    xpProgress,
+  } = useUserProgress();
 
-    // By difficulty
-    if (activeFilters.difficulty.length > 0) {
-      filtered = filtered.filter((task) =>
-        activeFilters.difficulty.includes(task.difficulty),
-      );
-    }
+  const stats = useTaskStats(tasks, filteredTasks);
 
-    // By category
-    if (activeFilters.category.length > 0) {
-      filtered = filtered.filter(
-        (task) =>
-          task.category && activeFilters.category.includes(task.category),
-      );
-    }
+  const { toggleCompletion, toggleStatus } = useTaskActions(
+    tasks,
+    setTasks,
+    updateProgress,
+    isSoundMuted,
+  );
 
-    return filtered;
-  }, [tasks, activeFilters]);
-
+  // Derived values
   const activeFilterCount =
     activeFilters.status.length +
     activeFilters.difficulty.length +
     activeFilters.category.length;
-  const completedTasksCount = tasks.filter((t) => t.completed).length;
-  const todoTasksCount = filteredTasks.filter(
-    (t) => t.status === "TODO",
-  ).length;
-  const inProgressTasksCount = filteredTasks.filter(
-    (t) => t.status === "IN_PROGRESS",
-  ).length;
-  const xpNeededForNextLevel = calculateXPNeeded(progress.level);
-  const xpProgressPercentage = (
-    (progress.currentXP / xpNeededForNextLevel) *
-    100
-  ).toFixed(0);
+
   const isFiltered = activeFilterCount > 0;
 
-  // Sounds
-  const playCompleteTask = useSound(SOUND_PATHS.TASK_COMPLETE, 0.05);
-  const playAddedTask = useSound(SOUND_PATHS.TASK_ADDED, 0.15);
-
-  // ========================================
-  // HELPER FUNCTIONS
-  // ========================================
-  function calculateXPNeeded(level: number): number {
-    return Math.floor(100 * Math.pow(level, 1.5));
-  }
-
-  function updateProgress(xpChange: number, isGaining: boolean = true) {
-    setProgress((prev) => {
-      const newCurrentXP = isGaining
-        ? prev.currentXP + xpChange
-        : Math.max(0, prev.currentXP - xpChange);
-
-      const newTotalXP = isGaining
-        ? prev.totalXP + xpChange
-        : prev.totalXP - xpChange;
-
-      const xpNeeded = calculateXPNeeded(prev.level);
-
-      // Check for level up
-      if (newCurrentXP >= xpNeeded) {
-        const overflow = newCurrentXP - xpNeeded;
-        return {
-          level: prev.level + 1,
-          currentXP: overflow,
-          totalXP: newTotalXP,
-        };
-      }
-
-      return {
-        ...prev,
-        currentXP: newCurrentXP,
-        totalXP: newTotalXP,
-      };
-    });
-  }
-
-  // ========================================
-  // TASK HANDLERS
-  // ========================================
-  const handleApplyFilters = (filters: TaskFilters) => {
-    setActiveFilters(filters);
-  };
-
-  function handleAddTask(title: string, difficulty: Difficulty) {
-    const newTask: Task = {
-      id: Date.now().toString(),
-      title,
-      category: "",
-      description: "",
-      difficulty,
-      xp: DIFFICULTIES[difficulty].xp,
-      status: "TODO",
-      createdAt: new Date().toISOString(),
-      completed: false,
-      completedAt: null,
-      dueDate: "",
-    };
-
-    setTasks((prev) => [...prev, newTask]);
-    console.log("Task created:", newTask);
-  }
-
-  function handleToggleCompletion(taskId: string) {
-    const task = tasks.find((t) => t.id === taskId);
-    if (!task) return;
-
-    const isCompleting = !task.completed;
-
-    // Update task completion status
-    setTasks((prev) =>
-      prev.map((t) =>
-        t.id === taskId
-          ? {
-              ...t,
-              status: isCompleting ? "COMPLETED" : "TODO",
-              completed: isCompleting,
-              completedAt: isCompleting ? new Date().toISOString() : null,
-              deletionTimer: isCompleting ? Date.now() : undefined, // Start timer; After timer finishes, move to Recently Completed.
-            }
-          : t,
-      ),
-    );
-
-    // Sound effect
-    isCompleting && !isSoundMuted && playCompleteTask();
-
-    // Update XP
-    updateProgress(task.xp!, isCompleting);
-  }
-
-  function handleTimerComplete(taskId: string) {
-    const completedTask = tasks.find((t) => t.id === taskId);
-
-    if (completedTask) {
-      // Add to recently completed (keep only last 5)
-      setRecentlyCompleted((prev) => {
-        const updated = [completedTask, ...prev];
-        return updated.slice(0, 5); // Keep only 5 most recent
-      });
-
-      setTasks((prev) => prev.filter((t) => t.id !== taskId));
-    }
-  }
-
+  // Handlers
   const handleUndoCompletion = (taskId: string) => {
-    const task = recentlyCompleted.find((t) => t.id === taskId);
-
+    const task = undoCompletion(taskId);
     if (task) {
-      // Move back to tasks
-      setTasks((prev) => [
-        ...prev,
-        {
-          ...task,
-          completed: false,
-          status: "TODO",
-          completedAt: null,
-          deletionTimer: undefined,
-        },
-      ]);
-
-      // Remove from recently completed
-      setRecentlyCompleted((prev) => prev.filter((t) => t.id !== taskId));
-
-      // Remove XP
       updateProgress(task.xp!, false);
     }
   };
 
-  function handleToggleStatus(taskId: string) {
-    const task = tasks.find((t) => t.id === taskId);
-    if (!task) return;
-
-    //Disable toggle if task's completed
-    const statusChanged: boolean = !(task.status === "COMPLETED");
-
-    setTasks((prev) =>
-      prev.map((t) =>
-        t.id === taskId
-          ? {
-              ...t,
-              status: statusChanged
-                ? t.status === "TODO"
-                  ? "IN_PROGRESS"
-                  : "TODO"
-                : t.status,
-            }
-          : t,
-      ),
-    );
-
-    statusChanged && !isSoundMuted && playAddedTask();
-  }
-
-  function handleUpdateTask(taskId: string, updatedData: Partial<Task>) {
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === taskId ? { ...task, ...updatedData } : task,
-      ),
-    );
-  }
-
-  function handleDeleteTask(taskId: string) {
-    setTasks((prev) => prev.filter((task) => task.id !== taskId));
-  }
-
-  // ========================================
-  // UI EVENT HANDLERS
-  // ========================================
-  function handleEditClick(taskId: string) {
-    setSelectedTaskId(taskId);
-    setIsEditDialogOpen(true);
-  }
-
-  function handleDeleteClick(taskId: string) {
-    setSelectedTaskId(taskId);
-    setIsDeleteDialogOpen(true);
-  }
-
-  function handleDeleteConfirm() {
+  const handleDeleteConfirm = () => {
     if (selectedTaskId) {
-      handleDeleteTask(selectedTaskId);
+      deleteTask(selectedTaskId);
       setSelectedTaskId(null);
       setIsDeleteDialogOpen(false);
     }
-  }
-  // Detect multiple level-ups (i.e., level 1 -> 3)
-  useEffect(() => {
-    if (progress.currentXP > calculateXPNeeded(progress.level)) {
-      setProgress({
-        level: progress.level + 1,
-        currentXP: progress.currentXP - calculateXPNeeded(progress.level),
-        totalXP: progress.totalXP,
-      });
-    }
-  }, [progress.currentXP]);
+  };
 
-  // Detect level up for animation
+  // Load username
   useEffect(() => {
-    if (progress.level > previousLevel) {
-      setShowLevelUp(true);
-      setPreviousLevel(progress.level);
-    }
-  }, [progress.level, previousLevel]);
-
-  useEffect(() => {
-    // Code here runs only in the browser
     if (typeof window !== "undefined") {
-      const storedName = localStorage.getItem(username);
-      if (storedName) {
-        setUsername(storedName);
+      const savedName = localStorage.getItem("username");
+      if (savedName) {
+        setUsername(savedName);
       }
     }
   }, []);
 
-  // DEBUG (Todo: Remove in production)
   useEffect(() => {
-    console.log("Tasks:", tasks);
-  }, [tasks]);
+    console.log(isSoundMuted);
+  }, [isSoundMuted]);
 
-  // ========================================
-  // RENDER
-  // ========================================
   return (
     <div>
       {!username ? (
         <WelcomeModal
-          onComplete={() => {
-            setUsername(localStorage.getItem("username")!);
-          }}
+          onComplete={() => setUsername(localStorage.getItem("username")!)}
           isOpen={!username}
         />
       ) : (
         <Container maxWidth="lg" sx={{ py: 8 }}>
-          {/* ===== HEADER ===== */}
+          {/* Header */}
           <Typography
-            sx={{
-              fontSize: 32,
-              fontWeight: 600,
-              fontFamily: "rubik",
-            }}
+            sx={{ fontSize: 32, fontWeight: 600, fontFamily: "rubik" }}
           >
             {`Welcome, ${username} 👋`}
           </Typography>
@@ -372,14 +143,12 @@ export default function DashboardPage() {
               Complete tasks to level up!
             </Typography>
 
-            {/* ===== CONTROL BUTTONS ===== */}
+            {/* Controls */}
             <div className="flex gap-2">
-              {/* Toggle Stats Visibility */}
               <button
-                className="rounded-full hover:bg-black/10 p-3 cursor-pointer flex justify-center items-center text-center transition-all duration-200"
+                className="rounded-full hover:bg-black/10 p-3 cursor-pointer transition-all"
                 onClick={() => setIsStatsHidden(!isStatsHidden)}
                 title={isStatsHidden ? "Show Stats" : "Hide Stats"}
-                aria-label={isStatsHidden ? "Show Stats" : "Hide Stats"}
               >
                 {isStatsHidden ? (
                   <IoEyeOffOutline className="text-2xl" />
@@ -388,12 +157,10 @@ export default function DashboardPage() {
                 )}
               </button>
 
-              {/* Toggle Sound */}
               <button
-                className="rounded-full hover:bg-black/10 p-3 cursor-pointer flex justify-center items-center text-center transition-all duration-200"
+                className="rounded-full hover:bg-black/10 p-3 cursor-pointer transition-all"
                 onClick={() => setIsSoundMuted(!isSoundMuted)}
                 title={isSoundMuted ? "Enable Sound" : "Mute Sound"}
-                aria-label={isSoundMuted ? "Enable Sound" : "Mute Sound"}
               >
                 {isSoundMuted ? (
                   <IoVolumeMute className="text-2xl" />
@@ -404,10 +171,9 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* ===== STATS CARDS ===== */}
+          {/* Stats */}
           {!isStatsHidden && (
             <div className="flex mt-2 mb-6 gap-2">
-              {/* Total XP */}
               <Paper
                 elevation={3}
                 sx={{
@@ -432,7 +198,6 @@ export default function DashboardPage() {
                 </div>
               </Paper>
 
-              {/* Streak */}
               <Paper
                 elevation={3}
                 sx={{
@@ -457,7 +222,6 @@ export default function DashboardPage() {
                 </div>
               </Paper>
 
-              {/* Completed Tasks */}
               <Paper
                 elevation={3}
                 sx={{
@@ -476,15 +240,15 @@ export default function DashboardPage() {
                   <Typography sx={{ fontFamily: "rubik", fontSize: 14 }}>
                     Completed
                   </Typography>
-                  <Typography sx={{ fontFamily: "rubik", fontSize: 18, mt: 1 }}>
-                    {`${completedTasksCount} Task(s)`}
-                  </Typography>
+                  <Typography
+                    sx={{ fontFamily: "rubik", fontSize: 18, mt: 1 }}
+                  >{`${stats.completedCount} Task(s)`}</Typography>
                 </div>
               </Paper>
             </div>
           )}
 
-          {/* ===== LEVEL PROGRESSION BAR ===== */}
+          {/* Level Progress */}
           <Paper
             elevation={3}
             sx={{
@@ -499,54 +263,34 @@ export default function DashboardPage() {
           >
             <div className="flex justify-between items-center w-full">
               <div className="flex gap-4">
-                {/* Level Badge */}
                 <div className="border-2 font-medium border-primary text-primary rounded-full size-12 flex justify-center items-center text-2xl">
                   {progress.level}
                 </div>
-
-                {/* Level Info */}
                 <div>
                   <p className="font-semibold">{`Level ${progress.level}`}</p>
-                  <p className="text-gray-600">
-                    {`${progress.currentXP} / ${xpNeededForNextLevel} XP`}
-                  </p>
+                  <p className="text-gray-600">{`${progress.currentXP} / ${xpNeeded} XP`}</p>
                 </div>
               </div>
-
-              {/* XP Remaining */}
-              <div className="font-medium self-end text-primary">
-                {`${xpNeededForNextLevel - progress.currentXP} XP to Level ${
-                  progress.level + 1
-                }`}
-              </div>
+              <div className="font-medium text-primary">{`${xpNeeded - progress.currentXP} XP to Level ${progress.level + 1}`}</div>
             </div>
-
-            {/* Progress Bar */}
             <div className="h-1.5 bg-gray-200 w-full rounded-full overflow-hidden">
               <div
                 className="h-full bg-primary transition-all duration-300"
-                style={{ width: `${xpProgressPercentage}%` }}
+                style={{ width: `${xpProgress}%` }}
               />
             </div>
           </Paper>
 
-          {/* ===== TASKS SECTION ===== */}
+          {/* Tasks */}
           <Paper
             elevation={3}
-            sx={{
-              my: 4,
-              p: 3,
-              borderRadius: 10,
-              fontFamily: "rubik",
-            }}
+            sx={{ my: 4, p: 3, borderRadius: 10, fontFamily: "rubik" }}
           >
-            {/* Header */}
             <div className="flex justify-between w-full p-2 items-center">
               <div>
-                <h1 className="text-2xl">{`${showRecentlyCompleted ? "Completed" : isFiltered ? `Filtered` : `All`} Tasks`}</h1>
-
+                <h1 className="text-2xl">{`${showRecentlyCompleted ? "Completed" : isFiltered ? "Filtered" : "All"} Tasks`}</h1>
                 <span className="text-sm text-gray-600">
-                  {`${showRecentlyCompleted && recentlyCompleted.length > 0 ? `${recentlyCompleted.length}` : isFiltered ? `${filteredTasks.length} of ${tasks.length}` : tasks.length} Total // ${todoTasksCount} ${STATUSES.TODO.label} // ${inProgressTasksCount} ${STATUSES.IN_PROGRESS.label}`}
+                  {`${showRecentlyCompleted && recentlyCompleted.length > 0 ? recentlyCompleted.length : isFiltered ? `${filteredTasks.length} of ${tasks.length}` : tasks.length} Total // ${stats.todoCount} ${STATUSES.TODO.label} // ${stats.inProgressCount} ${STATUSES.IN_PROGRESS.label}`}
                 </span>
               </div>
 
@@ -561,14 +305,12 @@ export default function DashboardPage() {
                     setShowRecentlyCompleted(!showRecentlyCompleted)
                   }
                 />
-                {/* Filter Button */}
                 <Button
                   variant="ghost"
                   icon={<IoFilterOutline className="text-2xl text-primary" />}
                   label="Filter"
                   onClick={() => setIsFilterDialogOpen(true)}
                 />
-                {/* Add Task Button */}
                 <Button
                   icon={<IoAdd className="text-2xl" />}
                   label="Add Task"
@@ -579,7 +321,6 @@ export default function DashboardPage() {
 
             <hr className="my-2 text-gray-200" />
 
-            {/* Task List or Empty State */}
             <div className="flex flex-col gap-3">
               {showRecentlyCompleted ? (
                 recentlyCompleted.map((task) => (
@@ -587,7 +328,10 @@ export default function DashboardPage() {
                     key={task.id}
                     task={task}
                     onToggleCompletion={() => handleUndoCompletion(task.id)}
-                    onEdit={() => handleEditClick(task.id)}
+                    onEdit={() => {
+                      setSelectedTaskId(task.id);
+                      setIsEditDialogOpen(true);
+                    }}
                   />
                 ))
               ) : tasks.length > 0 ? (
@@ -595,11 +339,17 @@ export default function DashboardPage() {
                   <TaskCard
                     key={task.id}
                     task={task}
-                    onToggleCompletion={() => handleToggleCompletion(task.id)}
-                    onToggleStatus={() => handleToggleStatus(task.id)}
-                    onTimerComplete={handleTimerComplete}
-                    onEdit={() => handleEditClick(task.id)}
-                    onDelete={() => handleDeleteClick(task.id)}
+                    onToggleCompletion={() => toggleCompletion(task.id)}
+                    onToggleStatus={() => toggleStatus(task.id)}
+                    onTimerComplete={moveToRecentlyCompleted}
+                    onEdit={() => {
+                      setSelectedTaskId(task.id);
+                      setIsEditDialogOpen(true);
+                    }}
+                    onDelete={() => {
+                      setSelectedTaskId(task.id);
+                      setIsDeleteDialogOpen(true);
+                    }}
                   />
                 ))
               ) : (
@@ -622,32 +372,28 @@ export default function DashboardPage() {
             </div>
           </Paper>
 
+          {/* Dialogs */}
           <LevelUpModal
             isOpen={showLevelUp}
             onClose={() => setShowLevelUp(false)}
             level={progress.level}
+            isMuted={isSoundMuted}
           />
 
-          {/* ===== DIALOGS ===== */}
-
-          {/* Add Task Dialog */}
           <AddTaskDialog
             tasks={tasks}
             setTasks={setTasks}
             isOpen={isAddDialogOpen}
             onClose={() => setIsAddDialogOpen(false)}
+            isMuted={isSoundMuted}
           />
-
-          {/* Edit Task Dialog */}
           <EditTaskDialog
             isOpen={isEditDialogOpen}
             onClose={() => setIsEditDialogOpen(false)}
             taskId={selectedTaskId}
             tasks={tasks}
-            onEdit={handleUpdateTask}
+            onEdit={updateTask}
           />
-
-          {/* Delete Task Dialog */}
           <DeleteTaskDialog
             isOpen={isDeleteDialogOpen}
             onClose={() => setIsDeleteDialogOpen(false)}
@@ -657,7 +403,7 @@ export default function DashboardPage() {
           <FilterDialog
             isOpen={isFilterDialogOpen}
             onClose={() => setIsFilterDialogOpen(false)}
-            onApply={handleApplyFilters}
+            onApply={setActiveFilters}
             currentFilters={activeFilters}
           />
         </Container>
