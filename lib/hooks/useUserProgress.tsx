@@ -9,6 +9,7 @@ export function useUserProgress() {
   });
   const [previousLevel, setPreviousLevel] = useState(1);
   const [showLevelUp, setShowLevelUp] = useState(false);
+  const [completedTaskCount, setCompletedTaskCount] = useState(0);
 
   const calculateXPNeeded = (level: number): number => {
     return Math.floor(100 * Math.pow(level, 1.5));
@@ -72,5 +73,7 @@ export function useUserProgress() {
     setShowLevelUp,
     xpNeeded,
     xpProgress,
+    completedTaskCount,
+    setCompletedTaskCount,
   };
 }

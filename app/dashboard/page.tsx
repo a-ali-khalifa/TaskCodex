@@ -66,6 +66,8 @@ export default function DashboardPage() {
     setShowLevelUp,
     xpNeeded,
     xpProgress,
+    completedTaskCount,
+    setCompletedTaskCount,
   } = useUserProgress();
 
   const stats = useTaskStats(tasks, filteredTasks);
@@ -90,7 +92,13 @@ export default function DashboardPage() {
     const task = undoCompletion(taskId);
     if (task) {
       updateProgress(task.xp!, false);
+      setCompletedTaskCount((prev) => Math.max(0, prev - 1)); // doesn't go negative
     }
+  };
+
+  const handleTimerComplete = (taskId: string) => {
+    moveToRecentlyCompleted(taskId);
+    setCompletedTaskCount((prev) => prev + 1);
   };
 
   const handleDeleteConfirm = () => {
@@ -99,6 +107,13 @@ export default function DashboardPage() {
       setSelectedTaskId(null);
       setIsDeleteDialogOpen(false);
     }
+  };
+
+  const showTaskSubheading = () => {
+    if (showRecentlyCompleted && recentlyCompleted.length > 0)
+      return `${recentlyCompleted.length} of 5 Completed Tasks`;
+    else
+      return `${isFiltered ? `${filteredTasks.length} of ${tasks.length}` : tasks.length} Total // ${stats.todoCount} ${STATUSES.TODO.label} // ${stats.inProgressCount} ${STATUSES.IN_PROGRESS.label}`;
   };
 
   // Load username
@@ -238,7 +253,7 @@ export default function DashboardPage() {
                   </Typography>
                   <Typography
                     sx={{ fontFamily: "rubik", fontSize: 18, mt: 1 }}
-                  >{`${stats.completedCount} Task(s)`}</Typography>
+                  >{`${completedTaskCount} Task(s)`}</Typography>
                 </div>
               </Paper>
             </div>
@@ -284,9 +299,9 @@ export default function DashboardPage() {
           >
             <div className="flex justify-between w-full p-2 items-center">
               <div>
-                <h1 className="text-2xl">{`${showRecentlyCompleted ? "Completed" : isFiltered ? "Filtered" : "All"} Tasks`}</h1>
+                <h1 className="text-2xl">{`${showRecentlyCompleted ? "Recently Completed" : `${isFiltered ? "Filtered" : "All"} Tasks`}`}</h1>
                 <span className="text-sm text-gray-600">
-                  {`${showRecentlyCompleted && recentlyCompleted.length > 0 ? recentlyCompleted.length : isFiltered ? `${filteredTasks.length} of ${tasks.length}` : tasks.length} Total // ${stats.todoCount} ${STATUSES.TODO.label} // ${stats.inProgressCount} ${STATUSES.IN_PROGRESS.label}`}
+                  {showTaskSubheading()}
                 </span>
               </div>
 
@@ -337,7 +352,7 @@ export default function DashboardPage() {
                     task={task}
                     onToggleCompletion={() => toggleCompletion(task.id)}
                     onToggleStatus={() => toggleStatus(task.id)}
-                    onTimerComplete={moveToRecentlyCompleted}
+                    onTimerComplete={handleTimerComplete}
                     onEdit={() => {
                       setSelectedTaskId(task.id);
                       setIsEditDialogOpen(true);
