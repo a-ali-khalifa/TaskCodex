@@ -1,5 +1,5 @@
 import Image from "next/image";
-import NoTasks from "@/public/icons/no_tasks.svg";
+import NoTasks from "@/public/images/no_tasks.svg";
 
 const EmptyMessage = () => {
   return (
