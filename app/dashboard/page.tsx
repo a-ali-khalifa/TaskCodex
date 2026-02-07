@@ -16,10 +16,10 @@ import { HiLightningBolt } from "react-icons/hi";
 
 import { Button } from "@/components/Button";
 import { TaskCard } from "@/components/TaskCard";
-import AddTaskDialog from "@/components/AddTaskDialog";
-import EditTaskDialog from "@/components/EditTaskDialog";
-import DeleteTaskDialog from "@/components/DeleteTaskDialog";
-import FilterDialog from "@/components/FilterDialog";
+import AddTaskDialog from "@/components/dialogs/AddTaskDialog";
+import EditTaskDialog from "@/components/dialogs/EditTaskDialog";
+import DeleteTaskDialog from "@/components/dialogs/DeleteTaskDialog";
+import FilterDialog from "@/components/dialogs/FilterDialog";
 import LevelUpModal from "@/components/LevelUpModal";
 import WelcomeModal from "@/components/WelcomeModal";
 import { STATUSES } from "@/lib/enums";
@@ -348,6 +348,7 @@ export default function DashboardPage() {
 
               <div className="flex gap-3">
                 <Button
+                  // className={showRecentlyCompleted ? "hover:text-white" : ""}
                   variant={showRecentlyCompleted ? "outline" : "ghost"}
                   icon={
                     <IoCheckmarkDoneOutline className="text-2xl text-primary" />

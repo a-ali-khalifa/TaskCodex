@@ -1,5 +1,5 @@
-import Dialog from "./Dialog";
-import { Button } from "./Button";
+import Dialog from "@/components/dialogs/Dialog";
+import { Button } from "@/components/Button";
 
 type DeleteTaskDialogProps = {
   isOpen: boolean;

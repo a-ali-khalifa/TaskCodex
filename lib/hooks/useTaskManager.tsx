@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { Task } from "@/types/Task";
 import { DIFFICULTIES, Difficulty } from "@/lib/enums";
-import { TaskFilters } from "@/components/FilterDialog";
+import { TaskFilters } from "@/components/dialogs/FilterDialog";
 
 export function useTaskManager() {
   const [tasks, setTasks] = useState<Task[]>([]);

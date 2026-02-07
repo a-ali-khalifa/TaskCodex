@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { DIFFICULTIES, CATEGORIES, STATUSES } from "@/lib/enums";
-import Dialog from "@/components/Dialog";
+import Dialog from "@/components/dialogs/Dialog";
 
 export type TaskFilters = {
   status: string[];

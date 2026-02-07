@@ -1,7 +1,6 @@
 "use client";
 
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import Dialog from "@/components/Dialog";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Task } from "@/types/Task";
 import {
   FormControl,
@@ -11,54 +10,81 @@ import {
   TextField,
 } from "@mui/material";
 import { Button } from "@/components/Button";
-import { CATEGORIES, DIFFICULTIES, STATUSES } from "@/lib/enums";
+import { CATEGORIES, DIFFICULTIES, SOUND_PATHS, STATUSES } from "@/lib/enums";
+import { useSound } from "@/lib/hooks/useSound";
+import Dialog from "@/components/dialogs/Dialog";
 
-type EditTaskDialogProps = {
+type AddTaskDialogProps = {
   isOpen: boolean;
   onClose: () => void;
-  taskId: string | null; // Selected task id
   tasks: Task[];
-  onEdit: (id: string, updatedData: Partial<Task>) => void;
+  setTasks: Dispatch<SetStateAction<Task[]>>;
+  isMuted?: boolean;
 };
 
-export default function EditTaskDialogProps({
+export default function AddTaskDialog({
   isOpen,
   onClose,
-  taskId,
   tasks,
-  onEdit,
-}: EditTaskDialogProps) {
-  const [taskData, setTaskData] = useState<Task | null>(null);
+  setTasks,
+  isMuted,
+}: AddTaskDialogProps) {
+  const [taskData, setTaskData] = useState<Task>({
+    id: (Math.random() * 10000).toString(),
+    title: "",
+    description: "",
+    category: "",
+    difficulty: "MEDIUM",
+    xp: DIFFICULTIES.MEDIUM.xp,
+    status: "TODO",
+    createdAt: "",
+    dueDate: "",
+    completed: false,
+    completedAt: "",
+  });
 
-  useEffect(() => {
-    if (isOpen && taskId) {
-      const task = tasks.find((t) => t.id === taskId);
-      if (task) {
-        setTaskData(task);
-      }
-    }
-  }, [isOpen, taskId, tasks]);
+  const taskTitlePlaceholders = [
+    "Go for a Jog 👟",
+    "Meditate for 30 mins 🧘‍♂️",
+    "Drink some water 🫗",
+  ];
 
-  const handleEdit = () => {
-    if (!taskData?.title.trim()) {
+  const playSound = useSound(SOUND_PATHS.TASK_ADDED, 0.15);
+
+  const handleSubmit = () => {
+    if (!taskData.title.trim()) {
       alert("Task title is required!");
       return;
     }
 
-    console.log("Updating task:", taskData);
-    onEdit(taskData.id, taskData);
+    // Task logic
+    taskData.createdAt = new Date().toISOString();
+    console.log("Creating task:", taskData);
+    setTasks([...tasks, taskData]);
 
     // Reset and close
-    setTaskData(null);
+    setTaskData({
+      id: (Math.random() * 10000).toFixed(0).toString(),
+      title: "",
+      description: "",
+      category: "",
+      difficulty: "MEDIUM",
+      xp: DIFFICULTIES.MEDIUM.xp,
+      status: "TODO",
+      createdAt: "",
+      dueDate: "",
+      completed: false,
+      completedAt: "",
+    });
+
+    if (!isMuted) playSound();
+
     onClose();
   };
 
-  // Don't render if no task data loaded yet
-  if (!taskData) return null;
-
   return (
-    <Dialog isOpen={isOpen} onClose={onClose} title="Update Task">
-      <div className="space-y-4">
+    <Dialog isOpen={isOpen} onClose={onClose} title="New Task">
+      <div className={`space-y-4`}>
         <div className="flex flex-col gap-4">
           {/* TITLE */}
           <TextField
@@ -70,6 +96,11 @@ export default function EditTaskDialogProps({
             onChange={(e) =>
               setTaskData({ ...taskData, title: e.target.value })
             }
+            placeholder={
+              taskTitlePlaceholders[
+                Math.floor(Math.random() * taskTitlePlaceholders.length)
+              ]
+            } // Get a random task title as a placeholder
           />
 
           {/* DESCRIPTION */}
@@ -92,7 +123,10 @@ export default function EditTaskDialogProps({
               value={taskData.category}
               label="Category"
               onChange={(e) =>
-                setTaskData({ ...taskData, category: e.target.value })
+                setTaskData({
+                  ...taskData,
+                  category: e.target.value,
+                })
               }
             >
               {Object.values(CATEGORIES).map((category) => (
@@ -136,7 +170,6 @@ export default function EditTaskDialogProps({
               value={taskData.status}
               label="Status"
               onChange={(e) =>
-                !taskData.completed &&
                 setTaskData({
                   ...taskData,
                   status: e.target.value,
@@ -170,8 +203,42 @@ export default function EditTaskDialogProps({
           </div>
 
           {/* ACTION BUTTONS */}
-          <Button label="Update" onClick={handleEdit} />
+          <Button label="Create" onClick={handleSubmit} />
         </div>
+
+        {/* CUSTOM STYLING - WIP */}
+        {/* <input
+          type="text"
+          placeholder="Task title"
+          value={taskData.title}
+          onChange={(e) => setTaskData({ ...taskData, title: e.target.value })}
+          className="w-full px-4 py-3 border border-gray-300 rounded-xl"
+        />
+
+        <textarea
+          placeholder="Description (optional)"
+          value={taskData.description}
+          onChange={(e) =>
+            setTaskData({ ...taskData, description: e.target.value })
+          }
+          className="w-full px-4 py-3 border border-gray-300 rounded-xl"
+          rows={4}
+        />
+
+        <div className="flex gap-3 justify-end">
+          <button
+            onClick={onClose}
+            className="px-6 py-3 bg-gray-100 rounded-xl hover:bg-gray-200"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSubmit}
+            className="px-6 py-3 bg-primary text-white rounded-xl hover:bg-[#2f4fcc]"
+          >
+            Create Task
+          </button> */}
+        {/* </div> */}
       </div>
     </Dialog>
   );
