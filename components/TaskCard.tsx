@@ -1,10 +1,5 @@
-import {
-  Category,
-  DIFFICULTIES,
-  Difficulty,
-  Status,
-  STATUSES,
-} from "@/lib/enums";
+import { TASK_TIMER_DURATION } from "@/lib/constants";
+import { DIFFICULTIES, STATUSES } from "@/lib/enums";
 import { useCompletionTimer } from "@/lib/hooks/useCompletionTimer";
 import { Task } from "@/types/Task";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
@@ -30,7 +25,9 @@ export const TaskCard = ({
 }: TaskCardProps) => {
   const progress = useCompletionTimer(task, onTimerComplete);
   const isTimerActive = task.completed && task.deletionTimer;
-  let countdown = Math.ceil((4000 - (Date.now() - task.deletionTimer!)) / 1000);
+  let countdown = Math.ceil(
+    (TASK_TIMER_DURATION - (Date.now() - task.deletionTimer!)) / 1000,
+  );
   return (
     <div className="relative border border-gray-300 rounded-xl p-4 overflow-hidden font-rubik">
       {/* Animated Background Bar */}
