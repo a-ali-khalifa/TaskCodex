@@ -28,6 +28,7 @@ import { useTaskActions } from "@/lib/hooks/useTaskActions";
 import { useTaskManager } from "@/lib/hooks/useTaskManager";
 import { useTaskStats } from "@/lib/hooks/useTaskStats";
 import { useUserProgress } from "@/lib/hooks/useUserProgress";
+import EmptyMessage from "@/components/EmptyMessage";
 
 export default function DashboardPage() {
   // User state
@@ -109,13 +110,6 @@ export default function DashboardPage() {
     }
   };
 
-  const showTaskSubheading = () => {
-    if (showRecentlyCompleted && recentlyCompleted.length > 0)
-      return `${recentlyCompleted.length} of 5 Completed Tasks`;
-    else
-      return `${isFiltered ? `${filteredTasks.length} of ${tasks.length}` : tasks.length} Total // ${stats.todoCount} ${STATUSES.TODO.label} // ${stats.inProgressCount} ${STATUSES.IN_PROGRESS.label}`;
-  };
-
   // Load username
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -125,6 +119,51 @@ export default function DashboardPage() {
       }
     }
   }, []);
+
+  const renderTaskSubheading = () => {
+    if (showRecentlyCompleted)
+      return `${recentlyCompleted.length} of 5 Completed Tasks`;
+    else
+      return `${isFiltered ? `${filteredTasks.length} of ${tasks.length}` : tasks.length} Total // ${stats.todoCount} ${STATUSES.TODO.label} // ${stats.inProgressCount} ${STATUSES.IN_PROGRESS.label}`;
+  };
+
+  const renderTasks = () => {
+    if (showRecentlyCompleted) {
+      if (recentlyCompleted.length === 0) return <EmptyMessage />;
+
+      return recentlyCompleted.map((task) => (
+        <TaskCard
+          key={task.id}
+          task={task}
+          onToggleCompletion={() => handleUndoCompletion(task.id)}
+          onEdit={() => {
+            setSelectedTaskId(task.id);
+            setIsEditDialogOpen(true);
+          }}
+        />
+      ));
+    }
+
+    if (filteredTasks.length === 0) return <EmptyMessage />;
+
+    return filteredTasks.map((task) => (
+      <TaskCard
+        key={task.id}
+        task={task}
+        onToggleCompletion={() => toggleCompletion(task.id)}
+        onToggleStatus={() => toggleStatus(task.id)}
+        onTimerComplete={handleTimerComplete}
+        onEdit={() => {
+          setSelectedTaskId(task.id);
+          setIsEditDialogOpen(true);
+        }}
+        onDelete={() => {
+          setSelectedTaskId(task.id);
+          setIsDeleteDialogOpen(true);
+        }}
+      />
+    ));
+  };
 
   return (
     <div>
@@ -299,15 +338,17 @@ export default function DashboardPage() {
           >
             <div className="flex justify-between w-full p-2 items-center">
               <div>
+                {/* Heading */}
                 <h1 className="text-2xl">{`${showRecentlyCompleted ? "Recently Completed" : `${isFiltered ? "Filtered" : "All"} Tasks`}`}</h1>
+                {/* Subheading */}
                 <span className="text-sm text-gray-600">
-                  {showTaskSubheading()}
+                  {renderTaskSubheading()}
                 </span>
               </div>
 
               <div className="flex gap-3">
                 <Button
-                  variant="ghost"
+                  variant={showRecentlyCompleted ? "outline" : "ghost"}
                   icon={
                     <IoCheckmarkDoneOutline className="text-2xl text-primary" />
                   }
@@ -332,55 +373,7 @@ export default function DashboardPage() {
 
             <hr className="my-2 text-gray-200" />
 
-            <div className="flex flex-col gap-3">
-              {showRecentlyCompleted ? (
-                recentlyCompleted.map((task) => (
-                  <TaskCard
-                    key={task.id}
-                    task={task}
-                    onToggleCompletion={() => handleUndoCompletion(task.id)}
-                    onEdit={() => {
-                      setSelectedTaskId(task.id);
-                      setIsEditDialogOpen(true);
-                    }}
-                  />
-                ))
-              ) : tasks.length > 0 ? (
-                filteredTasks.map((task) => (
-                  <TaskCard
-                    key={task.id}
-                    task={task}
-                    onToggleCompletion={() => toggleCompletion(task.id)}
-                    onToggleStatus={() => toggleStatus(task.id)}
-                    onTimerComplete={handleTimerComplete}
-                    onEdit={() => {
-                      setSelectedTaskId(task.id);
-                      setIsEditDialogOpen(true);
-                    }}
-                    onDelete={() => {
-                      setSelectedTaskId(task.id);
-                      setIsDeleteDialogOpen(true);
-                    }}
-                  />
-                ))
-              ) : (
-                <div
-                  className="border-2 rounded-lg border-dashed border-gray-300 p-4 flex items-center cursor-pointer hover:bg-black/5 transition-colors duration-200"
-                  onClick={() => setIsAddDialogOpen(true)}
-                >
-                  <Typography
-                    sx={{
-                      pt: 1,
-                      fontSize: 16,
-                      fontFamily: "rubik",
-                      color: "#4C5564",
-                    }}
-                  >
-                    What would you like to accomplish?
-                  </Typography>
-                </div>
-              )}
-            </div>
+            <div className="flex flex-col gap-3">{renderTasks()}</div>
           </Paper>
 
           {/* Dialogs */}
