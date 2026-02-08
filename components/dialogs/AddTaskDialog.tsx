@@ -43,6 +43,8 @@ export default function AddTaskDialog({
     completedAt: "",
   });
 
+  const [titleErrorMessage, setTitleErrorMessage] = useState("");
+
   const taskTitlePlaceholders = [
     "Go for a Jog 👟",
     "Meditate for 30 mins 🧘‍♂️",
@@ -53,7 +55,7 @@ export default function AddTaskDialog({
 
   const handleSubmit = () => {
     if (!taskData.title.trim()) {
-      alert("Task title is required!");
+      setTitleErrorMessage("This is a required field.");
       return;
     }
 
@@ -76,6 +78,7 @@ export default function AddTaskDialog({
       completed: false,
       completedAt: "",
     });
+    setTitleErrorMessage("");
 
     if (!isMuted) playSound();
 
@@ -83,9 +86,17 @@ export default function AddTaskDialog({
   };
 
   return (
-    <Dialog isOpen={isOpen} onClose={onClose} title="New Task">
+    <Dialog
+      isOpen={isOpen}
+      onClose={() => {
+        setTitleErrorMessage("");
+        onClose();
+      }}
+      title="New Task"
+    >
       <div className={`space-y-4`}>
         <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
           {/* TITLE */}
           <TextField
             id="outlined-basic"
@@ -102,6 +113,10 @@ export default function AddTaskDialog({
               ]
             } // Get a random task title as a placeholder
           />
+            {titleErrorMessage && (
+              <p className="text-secondary text-sm">{titleErrorMessage}</p>
+            )}
+          </div>
 
           {/* DESCRIPTION */}
           <TextField

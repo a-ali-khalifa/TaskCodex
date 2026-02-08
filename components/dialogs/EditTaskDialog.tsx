@@ -30,6 +30,8 @@ export default function EditTaskDialogProps({
 }: EditTaskDialogProps) {
   const [taskData, setTaskData] = useState<Task | null>(null);
 
+  const [titleErrorMessage, setTitleErrorMessage] = useState("");
+
   useEffect(() => {
     if (isOpen && taskId) {
       const task = tasks.find((t) => t.id === taskId);
@@ -41,7 +43,7 @@ export default function EditTaskDialogProps({
 
   const handleEdit = () => {
     if (!taskData?.title.trim()) {
-      alert("Task title is required!");
+      setTitleErrorMessage("Task title is required!");
       return;
     }
 
@@ -50,6 +52,7 @@ export default function EditTaskDialogProps({
 
     // Reset and close
     setTaskData(null);
+    setTitleErrorMessage("");
     onClose();
   };
 
@@ -57,9 +60,17 @@ export default function EditTaskDialogProps({
   if (!taskData) return null;
 
   return (
-    <Dialog isOpen={isOpen} onClose={onClose} title="Update Task">
+    <Dialog
+      isOpen={isOpen}
+      onClose={() => {
+        setTitleErrorMessage("");
+        onClose();
+      }}
+      title="Update Task"
+    >
       <div className="space-y-4">
         <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
           {/* TITLE */}
           <TextField
             id="outlined-basic"
@@ -71,6 +82,10 @@ export default function EditTaskDialogProps({
               setTaskData({ ...taskData, title: e.target.value })
             }
           />
+            {titleErrorMessage && (
+              <p className="text-secondary text-sm">{titleErrorMessage}</p>
+            )}
+          </div>
 
           {/* DESCRIPTION */}
           <TextField
