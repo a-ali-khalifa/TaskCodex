@@ -350,9 +350,7 @@ export default function DashboardPage() {
                 <Button
                   // className={showRecentlyCompleted ? "hover:text-white" : ""}
                   variant={showRecentlyCompleted ? "outline" : "ghost"}
-                  icon={
-                    <IoCheckmarkDoneOutline className="text-2xl text-primary" />
-                  }
+                  icon={<IoCheckmarkDoneOutline className="text-2xl" />}
                   label="Recently Completed"
                   onClick={() =>
                     setShowRecentlyCompleted(!showRecentlyCompleted)

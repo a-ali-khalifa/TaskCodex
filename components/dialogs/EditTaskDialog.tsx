@@ -1,6 +1,6 @@
 "use client";
 
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Dialog from "@/components/dialogs/Dialog";
 import { Task } from "@/types/Task";
 import {
@@ -41,20 +41,36 @@ export default function EditTaskDialogProps({
     }
   }, [isOpen, taskId, tasks]);
 
-  const handleEdit = () => {
+  const handleEdit = useCallback(() => {
     if (!taskData?.title.trim()) {
       setTitleErrorMessage("Task title is required!");
       return;
     }
 
-    console.log("Updating task:", taskData);
     onEdit(taskData.id, taskData);
 
     // Reset and close
     setTaskData(null);
     setTitleErrorMessage("");
     onClose();
-  };
+  }, [taskData, tasks, onClose]);
+
+  // Submit on Enter key
+  useEffect(() => {
+    const handleEnter = (e: KeyboardEvent) => {
+      if (e.key === "Enter") handleEdit();
+    };
+
+    if (isOpen) {
+      document.addEventListener("keydown", handleEnter);
+      document.body.style.overflow = "hidden"; // Prevent background scroll
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleEnter);
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen, handleEdit]);
 
   // Don't render if no task data loaded yet
   if (!taskData) return null;
@@ -71,17 +87,17 @@ export default function EditTaskDialogProps({
       <div className="space-y-4">
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
-          {/* TITLE */}
-          <TextField
-            id="outlined-basic"
-            label="Title"
-            variant="outlined"
-            required={true}
-            value={taskData.title}
-            onChange={(e) =>
-              setTaskData({ ...taskData, title: e.target.value })
-            }
-          />
+            {/* TITLE */}
+            <TextField
+              id="outlined-basic"
+              label="Title"
+              variant="outlined"
+              required={true}
+              value={taskData.title}
+              onChange={(e) =>
+                setTaskData({ ...taskData, title: e.target.value })
+              }
+            />
             {titleErrorMessage && (
               <p className="text-secondary text-sm">{titleErrorMessage}</p>
             )}

@@ -47,13 +47,14 @@ export default function Navbar() {
             );
           })}
 
-          <button className="cursor-pointer">
+          {/* Dark Theme - To be added  */}
+          {/* <button className="cursor-pointer">
             {toggleDarkMode ? (
               <></>
             ) : (
               <MdOutlineDarkMode className="text-lg hover:text-primary transition-all duration-[250]" />
             )}
-          </button>
+          </button> */}
         </div>
       </div>
     </nav>

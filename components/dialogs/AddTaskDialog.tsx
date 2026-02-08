@@ -1,6 +1,12 @@
 "use client";
 
-import { Dispatch, SetStateAction, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { Task } from "@/types/Task";
 import {
   FormControl,
@@ -53,7 +59,7 @@ export default function AddTaskDialog({
 
   const playSound = useSound(SOUND_PATHS.TASK_ADDED, 0.15);
 
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     if (!taskData.title.trim()) {
       setTitleErrorMessage("This is a required field.");
       return;
@@ -61,7 +67,6 @@ export default function AddTaskDialog({
 
     // Task logic
     taskData.createdAt = new Date().toISOString();
-    console.log("Creating task:", taskData);
     setTasks([...tasks, taskData]);
 
     // Reset and close
@@ -83,7 +88,24 @@ export default function AddTaskDialog({
     if (!isMuted) playSound();
 
     onClose();
-  };
+  }, [taskData, tasks, isMuted, playSound, onClose]);
+
+  // Submit on Enter key
+  useEffect(() => {
+    const handleEnter = (e: KeyboardEvent) => {
+      if (e.key === "Enter") handleSubmit();
+    };
+
+    if (isOpen) {
+      document.addEventListener("keydown", handleEnter);
+      document.body.style.overflow = "hidden"; // Prevent background scroll
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleEnter);
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen, handleSubmit]);
 
   return (
     <Dialog
@@ -97,22 +119,22 @@ export default function AddTaskDialog({
       <div className={`space-y-4`}>
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
-          {/* TITLE */}
-          <TextField
-            id="outlined-basic"
-            label="Title"
-            variant="outlined"
-            required={true}
-            value={taskData.title}
-            onChange={(e) =>
-              setTaskData({ ...taskData, title: e.target.value })
-            }
-            placeholder={
-              taskTitlePlaceholders[
-                Math.floor(Math.random() * taskTitlePlaceholders.length)
-              ]
-            } // Get a random task title as a placeholder
-          />
+            {/* TITLE */}
+            <TextField
+              id="outlined-basic"
+              label="Title"
+              variant="outlined"
+              required={true}
+              value={taskData.title}
+              onChange={(e) =>
+                setTaskData({ ...taskData, title: e.target.value })
+              }
+              placeholder={
+                taskTitlePlaceholders[
+                  Math.floor(Math.random() * taskTitlePlaceholders.length)
+                ]
+              } // Get a random task title as a placeholder
+            />
             {titleErrorMessage && (
               <p className="text-secondary text-sm">{titleErrorMessage}</p>
             )}
