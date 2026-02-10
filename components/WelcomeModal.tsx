@@ -9,7 +9,7 @@ type WelcomeModalProps = {
 
 const WelcomeModal = ({ onComplete }: WelcomeModalProps) => {
   const intro = useRef<any | null>(null);
-  const [username, setUsername] = useState<string>();
+  const [username, setUsername] = useState<string>("");
 
   return (
     <Container

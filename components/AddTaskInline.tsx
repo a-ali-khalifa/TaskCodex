@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { FiDelete, FiZap } from "react-icons/fi";
 import { IoClose } from "react-icons/io5";
 
-export function AddTask({
+export function AddTaskInline({
   isOpen,
   onClose,
   onCreateTask,
@@ -176,7 +176,7 @@ export function AddTask({
                           type="button"
                           onClick={() => {
                             setSelectedDifficulty(
-                              key as keyof typeof DIFFICULTIES
+                              key as keyof typeof DIFFICULTIES,
                             );
                           }}
                           whileHover={{ scale: 1.02 }}
