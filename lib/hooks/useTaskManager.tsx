@@ -2,10 +2,14 @@ import { useState, useMemo } from "react";
 import { Task } from "@/types/Task";
 import { DIFFICULTIES, Difficulty } from "@/lib/enums";
 import { TaskFilters } from "@/components/dialogs/FilterDialog";
+import { usePersistedState } from "@/lib/hooks/usePersistedStorage";
 
 export function useTaskManager() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [recentlyCompleted, setRecentlyCompleted] = useState<Task[]>([]);
+  const [tasks, setTasks] = usePersistedState<Task[]>("tasks", []);
+  const [recentlyCompleted, setRecentlyCompleted] = usePersistedState<Task[]>(
+    "recently_completed",
+    [],
+  );
   const [activeFilters, setActiveFilters] = useState<TaskFilters>({
     status: [],
     difficulty: [],

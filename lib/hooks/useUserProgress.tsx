@@ -1,23 +1,27 @@
 import { useState, useEffect } from "react";
 import { UserProgress } from "@/types/UserProgress";
+import { usePersistedState } from "@/lib/hooks/usePersistedStorage";
 
 export function useUserProgress() {
-  const [progress, setProgress] = useState<UserProgress>({
+  const [progress, setProgress] = usePersistedState<UserProgress>("progress", {
     level: 1,
     currentXP: 0,
     totalXP: 0,
   });
-  const [previousLevel, setPreviousLevel] = useState(1);
+  const [completedTaskCount, setCompletedTaskCount] = usePersistedState(
+    "completed_tasks",
+    0,
+  );
   const [showLevelUp, setShowLevelUp] = useState(false);
-  const [completedTaskCount, setCompletedTaskCount] = useState(0);
 
   const calculateXPNeeded = (level: number): number => {
     return Math.floor(100 * Math.pow(level, 1.5));
   };
 
   const updateProgress = (xpChange: number, isGaining: boolean = true) => {
+    //isGaining: true -> xp is being added; false -> xp is subtracted (when task is marked uncompleted)
     setProgress((prev) => {
-      const newCurrentXP = isGaining
+      let newCurrentXP = isGaining
         ? prev.currentXP + xpChange
         : Math.max(0, prev.currentXP - xpChange);
 
@@ -25,43 +29,28 @@ export function useUserProgress() {
         ? prev.totalXP + xpChange
         : prev.totalXP - xpChange;
 
-      const xpNeeded = calculateXPNeeded(prev.level);
+      let newLevel = prev.level;
 
-      if (newCurrentXP >= xpNeeded) {
-        const overflow = newCurrentXP - xpNeeded;
-        return {
-          level: prev.level + 1,
-          currentXP: overflow,
-          totalXP: newTotalXP,
-        };
+      // Detect level up (can be multiple levels)
+      let xpNeeded = calculateXPNeeded(newLevel);
+
+      while (newCurrentXP >= xpNeeded) {
+        newCurrentXP -= xpNeeded;
+        newLevel++;
+        xpNeeded = calculateXPNeeded(newLevel);
+      }
+
+      if (newLevel > prev.level) {
+        setShowLevelUp(true);
       }
 
       return {
-        ...prev,
+        level: newLevel,
         currentXP: newCurrentXP,
         totalXP: newTotalXP,
       };
     });
   };
-
-  // Detect multiple level-ups (i.e., level 1 -> 3)
-  useEffect(() => {
-    if (progress.currentXP > calculateXPNeeded(progress.level)) {
-      setProgress({
-        level: progress.level + 1,
-        currentXP: progress.currentXP - calculateXPNeeded(progress.level),
-        totalXP: progress.totalXP,
-      });
-    }
-  }, [progress.currentXP]);
-
-  // Detect level up for animation
-  useEffect(() => {
-    if (progress.level > previousLevel) {
-      setShowLevelUp(true);
-      setPreviousLevel(progress.level);
-    }
-  }, [progress.level, previousLevel]);
 
   const xpNeeded = calculateXPNeeded(progress.level);
   const xpProgress = ((progress.currentXP / xpNeeded) * 100).toFixed(0);

@@ -29,10 +29,11 @@ import { useTaskManager } from "@/lib/hooks/useTaskManager";
 import { useTaskStats } from "@/lib/hooks/useTaskStats";
 import { useUserProgress } from "@/lib/hooks/useUserProgress";
 import EmptyMessage from "@/components/EmptyMessage";
+import { usePersistedState } from "@/lib/hooks/usePersistedStorage";
 
 export default function DashboardPage() {
   // User state
-  const [username, setUsername] = useState<string>("");
+  const [username, setUsername] = usePersistedState<string>("username", "");
   const [streak, setStreak] = useState(0);
 
   // UI state
@@ -109,16 +110,6 @@ export default function DashboardPage() {
       setIsDeleteDialogOpen(false);
     }
   };
-
-  // Load username
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedName = localStorage.getItem("username");
-      if (savedName) {
-        setUsername(savedName);
-      }
-    }
-  }, []);
 
   const renderTaskSubheading = () => {
     if (showRecentlyCompleted)
