@@ -35,8 +35,8 @@ export default function AddTaskDialog({
   setTasks,
   isMuted,
 }: AddTaskDialogProps) {
-  const [taskData, setTaskData] = useState<Task>({
-    id: (Math.random() * 10000).toString(),
+  const [taskData, setTaskData] = useState<Task>(() => ({
+    id: crypto.randomUUID(),
     title: "",
     description: "",
     category: "",
@@ -47,7 +47,7 @@ export default function AddTaskDialog({
     dueDate: "",
     completed: false,
     completedAt: "",
-  });
+  }));
 
   const [titleErrorMessage, setTitleErrorMessage] = useState("");
 
@@ -71,7 +71,7 @@ export default function AddTaskDialog({
 
     // Reset and close
     setTaskData({
-      id: (Math.random() * 10000).toFixed(0).toString(),
+      id: crypto.randomUUID(),
       title: "",
       description: "",
       category: "",
