@@ -3,7 +3,7 @@
 import { SOUND_PATHS } from "@/lib/enums";
 import { useSound } from "@/lib/hooks/useSound";
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { IoSparklesSharp } from "react-icons/io5";
 
 type LevelUpModalProps = {
@@ -22,11 +22,19 @@ export default function LevelUpModal({
   const [showConfetti, setShowConfetti] = useState(false);
 
   const playSound = useSound(SOUND_PATHS.LEVEL_UP, 0.18);
+  const hasPlayedSound = useRef(false); //Track if sound already played once; Avoid an issue where it plays each time a task is completed.
+
   useEffect(() => {
     if (isOpen) {
       setShowConfetti(true);
-      if (!isMuted) playSound();
-      // Auto-close after 3 seconds
+
+      // Play sound once
+      if (!isMuted && !hasPlayedSound.current) {
+        playSound();
+        hasPlayedSound.current = true;
+      }
+
+      // Auto- after 3 seconds
       const timer = setTimeout(() => {
         onClose();
       }, 3000);
