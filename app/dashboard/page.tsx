@@ -30,6 +30,7 @@ import { useTaskStats } from "@/lib/hooks/useTaskStats";
 import { useUserProgress } from "@/lib/hooks/useUserProgress";
 import EmptyMessage from "@/components/EmptyMessage";
 import { usePersistedState } from "@/lib/hooks/usePersistedStorage";
+import LevelBar from "@/components/LevelBar";
 
 export default function DashboardPage() {
   // User state
@@ -368,6 +369,13 @@ export default function DashboardPage() {
 
             <div className="flex flex-col gap-3">{renderTasks()}</div>
           </Paper>
+
+          {/* <LevelBar
+            level={progress.level}
+            currentXP={progress.currentXP}
+            xpNeeded={xpNeeded}
+            xpProgress={xpProgress}
+          /> */}
 
           {/* Dialogs */}
           <LevelUpModal
