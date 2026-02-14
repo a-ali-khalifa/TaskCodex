@@ -248,7 +248,10 @@ export default function DashboardPage() {
                   display: "flex",
                   alignItems: "center",
                   gap: 2,
+                  opacity: 0.5,
+                  background: "white",
                 }}
+                title="Coming Soon!"
               >
                 <div className="flex-1 size-full flex items-center justify-center bg-orange-100 rounded-lg">
                   <FaFireFlameCurved className="text-secondary text-[28px]" />
