@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/Button";
-import { Container } from "@mui/material";
+import { Container, Typography } from "@mui/material";
 import Link from "next/link";
 
 export default function HomePage() {
@@ -26,15 +26,32 @@ export default function HomePage() {
             experience points, track your growth and celebrate each win.
           </p>
 
-          <Link href={"/dashboard"}>
-            <Button label="Start Leveling 🚀" size="lg" variant="outline" />
-          </Link>
+          <div className="flex justify-center gap-3">
+            <Link href={"/dashboard"}>
+              <Button label="Start Leveling 🚀" size="lg" variant="outline" />
+            </Link>
 
-          {/* <Link href={"/dashboard"}>
-            <Button label="Learn more 📖" size="lg" />
-          </Link> */}
+            <Link href={""}>
+              <Button
+                label="Source Code ⚙️"
+                size="lg"
+                className="border-2 border-primary"
+                variant="solid"
+              />
+            </Link>
+          </div>
         </section>
-        <section id="features"></section>
+        <section id="features">
+          {/* <Typography>Features</Typography>
+          <div className="grid grid-cols-3 gap-2">
+            <div>Feature</div>
+            <div>Feature</div>
+            <div>Feature</div>
+            <div>Feature</div>
+            <div>Feature</div>
+            <div>Feature</div>
+          </div> */}
+        </section>
       </Container>
     </div>
   );
