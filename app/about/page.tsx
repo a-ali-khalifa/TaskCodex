@@ -16,16 +16,17 @@ const page = () => {
           lineHeight: 1.7,
         }}
       >
-        Task Codex is an open-source, gamified task management app that makes
-        productivity feel rewarding. By blending everyday task tracking with
-        RPG-style progression — levels, XP, and achievements — it turns your
-        to-do list into something you actually want to engage with.
+        Task Codex is an open-source, gamified task management app that aims to
+        make productivity feel rewarding. By blending everyday task tracking
+        with RPG-style progression — levels, XP, and achievements — it turns
+        your to-do list into something you actually want to engage with rather
+        than procastinate from.
         <br />
         <br />
         Create tasks, assign difficulty levels, and earn XP as you complete
         them. The harder the task, the bigger the reward. You can also further
-        add descriptions, categories, statuses, and due dates to keep everything
-        organized.
+        set properties like descriptions, categories, statuses, and due dates.
+        Most of these can be filtered to help keep everything organized.
       </Typography>
 
       <hr className="text-gray-400" />
@@ -51,8 +52,8 @@ const page = () => {
       >
         A full contribution guide (including a CONTRIBUTING.md file) is
         currently in the works and will be available here soon. In the meantime,
-        feel free to explore the repo and open issues or discussions if you'd
-        like to get involved.
+        feel free to explore the GitHub repository and open issues or
+        discussions if you would like to get involved.
       </Typography>
 
       <hr className="text-gray-400" />
@@ -76,9 +77,9 @@ const page = () => {
         }}
       >
         Task Codex is completely free and open-source. The best way to support
-        the project is simple: star the repository on GitHub (it only takes a
-        click!) or share it with someone who might find it useful. Every star
-        helps the project grow.
+        the project is to simply star the repository on GitHub (in one click!)
+        or share it with someone who might find it useful. Every star helps the
+        project grow.
       </Typography>
 
       <Typography

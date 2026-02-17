@@ -61,7 +61,7 @@ export default function HomePage() {
               alt={"Progress"}
               title={"Gamified Productivity"}
               description={
-                "Earn XP and level up as you complete tasks. The harder thechallenge, the bigger the reward."
+                "Earn points (XP) and level up as you complete tasks. Track your points and completed tasks through the Dashboard."
               }
               className="bg-blue-200"
             />
@@ -70,7 +70,7 @@ export default function HomePage() {
               alt={"Spreadsheet"}
               title={"Smart Task Organization"}
               description={
-                "Add descriptions, categories, statuses, and due dates. Keep everything structured your way."
+                "Add properties like descriptions, categories, statuses, and due dates. Then use a Filter to keep everything sorted."
               }
               className="bg-gray-300"
             />
@@ -88,7 +88,7 @@ export default function HomePage() {
               alt={"Open-source"}
               title={"Free & Open Source"}
               description={
-                "Built in the open, completely free. Contribute and customize as you like."
+                "Built in the open, completely free. Contribute and customize as you like (MIT-licensed)."
               }
               className="bg-purple-200"
             />
@@ -111,7 +111,7 @@ export default function HomePage() {
             <FeatureCard
               src={StatsImg}
               alt={"Stats"}
-              title={"Track Your Stats"}
+              title={"Track Your Journey"}
               description={
                 "Daily streaks, achievements and more stats to be added in future updates."
               }
