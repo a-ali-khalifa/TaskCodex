@@ -114,7 +114,7 @@ export default function DashboardPage() {
 
   const renderTaskSubheading = () => {
     if (showRecentlyCompleted)
-      return `${recentlyCompleted.length} of 5 Completed Tasks`;
+      return `${recentlyCompleted.length} of (up to) 5 Completed Tasks`;
     else
       return `${isFiltered ? `${filteredTasks.length} of ${tasks.length}` : tasks.length} Total // ${stats.todoCount} ${STATUSES.TODO.label} // ${stats.inProgressCount} ${STATUSES.IN_PROGRESS.label}`;
   };
@@ -343,8 +343,7 @@ export default function DashboardPage() {
 
               <div className="flex gap-3">
                 <Button
-                  // className={showRecentlyCompleted ? "hover:text-white" : ""}
-                  variant={showRecentlyCompleted ? "outline" : "ghost"}
+                  variant={showRecentlyCompleted ? "solid" : "ghost"}
                   icon={<IoCheckmarkDoneOutline className="text-2xl" />}
                   label="Recently Completed"
                   onClick={() =>
@@ -352,8 +351,10 @@ export default function DashboardPage() {
                   }
                 />
                 <Button
-                  variant="ghost"
-                  icon={<IoFilterOutline className="text-2xl text-primary" />}
+                  variant={
+                    isFiltered && !showRecentlyCompleted ? "solid" : "ghost"
+                  }
+                  icon={<IoFilterOutline className="text-2xl " />}
                   label="Filter"
                   onClick={() => setIsFilterDialogOpen(true)}
                 />
