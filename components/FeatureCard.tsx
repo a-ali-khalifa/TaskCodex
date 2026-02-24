@@ -37,8 +37,8 @@ const FeatureCard = ({
         />
       </div>
       <div className="flex-1 px-4 pt-0 pb-8">
-        <h2 className="text-2xl font-medium mb-2">{title}</h2>
-        <p className="text-lg">{description}</p>
+        <h2 className="text-lg md:text-2xl font-medium mb-2">{title}</h2>
+        <p className="text-base md:text-lg">{description}</p>
       </div>
     </Paper>
   );

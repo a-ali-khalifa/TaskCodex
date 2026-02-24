@@ -1,7 +1,13 @@
 "use client";
 
 import { Button } from "@/components/Button";
-import { Container, Paper, Typography } from "@mui/material";
+import {
+  Container,
+  Paper,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
 import { RiTaskFill } from "react-icons/ri";
@@ -14,36 +20,42 @@ import StatsImg from "@/public/images/stats.svg";
 import FeatureCard from "@/components/FeatureCard";
 
 export default function HomePage() {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   return (
     <div className="">
-      <Container maxWidth="md" sx={{ py: 16 }}>
+      <Container maxWidth="md" sx={{ py: { xs: 4, md: 16 } }}>
         {/* Hero Section */}
         <section id="hero" className="text-center font-rubik min-h-screen">
-          <div className="bg-white/70 p-2 rounded-full h-10 flex flex-col justify-center border border-[#3F65FF] ">
-            <p className="text-xl">Level up productivity 🎚️</p>
+          <div className="bg-white/70 p-2 rounded-full h-8 md:h-10 flex flex-col justify-center border border-[#3F65FF] ">
+            <p className="text-base md:text-xl">Level up productivity 🎚️</p>
           </div>
           <br />
-          <p className="text-8xl">
+          <p className="text-6xl md:text-8xl">
             Making tasks feel like{" "}
             <span className="text-primary drop-shadow-2xl drop-shadow-black/50">
               progress
             </span>
           </p>
 
-          <p className="text-2xl text-black/60 m-6">
+          <p className="text-base md:text-2xl text-black/60 m-4 md:m-6">
             Transform your to-do list into a fun leveling journey. Gain
             experience points, track your growth and celebrate each win.
           </p>
 
-          <div className="flex justify-center gap-3">
+          <div className="flex flex-col md:flex-row justify-center gap-2 md:gap-3">
             <Link href={"/dashboard"}>
-              <Button label="Start Leveling 🚀" size="lg" variant="outline" />
+              <Button
+                label="Start Leveling 🚀"
+                size={isMobile ? "md" : "lg"}
+                variant="outline"
+              />
             </Link>
 
             <Link href={""}>
               <Button
                 label="Source Code ⚙️"
-                size="lg"
+                size={isMobile ? "md" : "lg"}
                 className="border-2 border-primary"
                 variant="solid"
               />
@@ -51,11 +63,13 @@ export default function HomePage() {
           </div>
         </section>
         <section id="features" className="font-rubik">
-          <Typography sx={{ fontFamily: "rubik", fontSize: 42, mb: 4 }}>
+          <Typography
+            sx={{ fontFamily: "rubik", fontSize: { xs: 32, md: 42 }, mb: 4 }}
+          >
             Features
           </Typography>
 
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FeatureCard
               src={ProgressImg}
               alt={"Progress"}
@@ -94,11 +108,13 @@ export default function HomePage() {
             />
           </div>
 
-          <Typography sx={{ fontFamily: "rubik", fontSize: 32, my: 4 }}>
+          <Typography
+            sx={{ fontFamily: "rubik", fontSize: { xs: 28, md: 32 }, my: 4 }}
+          >
             Coming Soon
           </Typography>
 
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FeatureCard
               src={MobileImg}
               alt={"Mobile"}
