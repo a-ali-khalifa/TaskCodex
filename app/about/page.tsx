@@ -2,15 +2,20 @@ import { Container, Typography } from "@mui/material";
 
 const page = () => {
   return (
-    <Container maxWidth="lg" sx={{ py: 8 }}>
+    <Container maxWidth="lg" sx={{ py: { xs: 4, md: 8 } }}>
       <Typography
-        sx={{ fontSize: 32, fontWeight: 600, fontFamily: "rubik", mb: 2 }}
+        sx={{
+          fontSize: { xs: 28, md: 32 },
+          fontWeight: 600,
+          fontFamily: "rubik",
+          mb: 2,
+        }}
       >
         About
       </Typography>
       <Typography
         sx={{
-          fontSize: 18,
+          fontSize: { xs: 16, md: 18 },
           mb: 4,
           fontFamily: "rubik",
           lineHeight: 1.7,
@@ -33,7 +38,7 @@ const page = () => {
 
       <Typography
         sx={{
-          fontSize: 28,
+          fontSize: { xs: 24, md: 28 },
           fontWeight: 600,
           fontFamily: "rubik",
           mt: 4,
@@ -44,7 +49,7 @@ const page = () => {
       </Typography>
       <Typography
         sx={{
-          fontSize: 18,
+          fontSize: { xs: 16, md: 18 },
           mb: 4,
           fontFamily: "rubik",
           lineHeight: 1.7,
@@ -59,7 +64,7 @@ const page = () => {
       <hr className="text-gray-400" />
       <Typography
         sx={{
-          fontSize: 28,
+          fontSize: { xs: 24, md: 28 },
           fontWeight: 600,
           fontFamily: "rubik",
           mt: 4,
@@ -70,7 +75,7 @@ const page = () => {
       </Typography>
       <Typography
         sx={{
-          fontSize: 18,
+          fontSize: { xs: 16, md: 18 },
           mb: 2,
           fontFamily: "rubik",
           lineHeight: 1.7,
@@ -84,7 +89,7 @@ const page = () => {
 
       <Typography
         sx={{
-          fontSize: 24,
+          fontSize: { xs: 24, md: 28 },
           fontWeight: 600,
           fontFamily: "rubik",
           mt: 4,
@@ -95,7 +100,7 @@ const page = () => {
       </Typography>
       <Typography
         sx={{
-          fontSize: 18,
+          fontSize: { xs: 16, md: 18 },
           mb: 2,
           fontFamily: "rubik",
           lineHeight: 1.7,
