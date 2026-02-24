@@ -15,7 +15,7 @@ const page = () => {
       </Typography>
       <Typography
         sx={{
-          fontSize: { xs: 16, md: 18 },
+          fontSize: 18,
           mb: 4,
           fontFamily: "rubik",
           lineHeight: 1.7,
@@ -49,7 +49,7 @@ const page = () => {
       </Typography>
       <Typography
         sx={{
-          fontSize: { xs: 16, md: 18 },
+          fontSize: 18,
           mb: 4,
           fontFamily: "rubik",
           lineHeight: 1.7,
@@ -75,7 +75,7 @@ const page = () => {
       </Typography>
       <Typography
         sx={{
-          fontSize: { xs: 16, md: 18 },
+          fontSize: 18,
           mb: 2,
           fontFamily: "rubik",
           lineHeight: 1.7,
@@ -100,7 +100,7 @@ const page = () => {
       </Typography>
       <Typography
         sx={{
-          fontSize: { xs: 16, md: 18 },
+          fontSize: 18,
           mb: 2,
           fontFamily: "rubik",
           lineHeight: 1.7,
