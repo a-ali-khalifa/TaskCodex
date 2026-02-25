@@ -1,7 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Container, Paper, Typography } from "@mui/material";
+import { useState } from "react";
+import {
+  Container,
+  Paper,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import {
   IoAdd,
   IoCheckmarkDoneOutline,
@@ -30,7 +36,6 @@ import { useTaskStats } from "@/lib/hooks/useTaskStats";
 import { useUserProgress } from "@/lib/hooks/useUserProgress";
 import EmptyMessage from "@/components/EmptyMessage";
 import { usePersistedState } from "@/lib/hooks/usePersistedStorage";
-import LevelBar from "@/components/LevelBar";
 
 export default function DashboardPage() {
   // User state
@@ -38,6 +43,9 @@ export default function DashboardPage() {
   const [streak, setStreak] = useState(0);
 
   // UI state
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
   const [showRecentlyCompleted, setShowRecentlyCompleted] = useState(false);
   const [isStatsHidden, setIsStatsHidden] = useState(false);
   const [isSoundMuted, setIsSoundMuted] = useState(false);
@@ -132,6 +140,7 @@ export default function DashboardPage() {
             setSelectedTaskId(task.id);
             setIsEditDialogOpen(true);
           }}
+          isMobileView={isMobile}
         />
       ));
     }
@@ -153,6 +162,7 @@ export default function DashboardPage() {
           setSelectedTaskId(task.id);
           setIsDeleteDialogOpen(true);
         }}
+        isMobileView={isMobile}
       />
     ));
   };
@@ -165,10 +175,14 @@ export default function DashboardPage() {
           isOpen={!username}
         />
       ) : (
-        <Container maxWidth="lg" sx={{ py: 8 }}>
+        <Container maxWidth="lg" sx={{ py: { xs: 4, md: 8 } }}>
           {/* Header */}
           <Typography
-            sx={{ fontSize: 32, fontWeight: 600, fontFamily: "rubik" }}
+            sx={{
+              fontSize: { xs: 28, sm: 32 },
+              fontWeight: 600,
+              fontFamily: "rubik",
+            }}
           >
             {`Welcome, ${username} 👋`}
           </Typography>
@@ -176,7 +190,7 @@ export default function DashboardPage() {
           <div className="flex justify-between items-center">
             <Typography
               sx={{
-                fontSize: 24,
+                fontSize: { xs: 18, sm: 24 },
                 mb: 2,
                 fontFamily: "rubik",
                 color: "#4C5564",
@@ -215,7 +229,7 @@ export default function DashboardPage() {
 
           {/* Stats */}
           {!isStatsHidden && (
-            <div className="flex mt-2 mb-6 gap-2">
+            <div className="flex flex-col md:flex-row mt-2 mb-6 gap-2">
               <Paper
                 elevation={3}
                 sx={{
@@ -234,7 +248,13 @@ export default function DashboardPage() {
                   <Typography sx={{ fontFamily: "rubik", fontSize: 14 }}>
                     Total XP
                   </Typography>
-                  <Typography sx={{ fontFamily: "rubik", fontSize: 18, mt: 1 }}>
+                  <Typography
+                    sx={{
+                      fontFamily: "rubik",
+                      fontSize: { xs: 16, md: 18 },
+                      mt: 1,
+                    }}
+                  >
                     {progress.totalXP}
                   </Typography>
                 </div>
@@ -261,7 +281,13 @@ export default function DashboardPage() {
                   <Typography sx={{ fontFamily: "rubik", fontSize: 14 }}>
                     Streak
                   </Typography>
-                  <Typography sx={{ fontFamily: "rubik", fontSize: 18, mt: 1 }}>
+                  <Typography
+                    sx={{
+                      fontFamily: "rubik",
+                      fontSize: { xs: 16, md: 18 },
+                      mt: 1,
+                    }}
+                  >
                     {streak}
                   </Typography>
                 </div>
@@ -286,7 +312,11 @@ export default function DashboardPage() {
                     Completed
                   </Typography>
                   <Typography
-                    sx={{ fontFamily: "rubik", fontSize: 18, mt: 1 }}
+                    sx={{
+                      fontFamily: "rubik",
+                      fontSize: { xs: 16, md: 18 },
+                      mt: 1,
+                    }}
                   >{`${completedTaskCount} Task(s)`}</Typography>
                 </div>
               </Paper>
@@ -308,15 +338,15 @@ export default function DashboardPage() {
           >
             <div className="flex justify-between items-center w-full">
               <div className="flex gap-4">
-                <div className="border-2 font-medium border-primary text-primary rounded-full size-12 flex justify-center items-center text-2xl">
+                <div className="border-2 font-medium border-primary text-primary rounded-full size-12 flex justify-center items-center text-xl md:text-2xl">
                   {progress.level}
                 </div>
                 <div>
-                  <p className="font-semibold">{`Level ${progress.level}`}</p>
-                  <p className="text-gray-600">{`${progress.currentXP} / ${xpNeeded} XP`}</p>
+                  <p className="text-sm md:text-base font-semibold">{`Level ${progress.level}`}</p>
+                  <p className="text-sm md:text-base text-gray-600">{`${progress.currentXP} / ${xpNeeded} XP`}</p>
                 </div>
               </div>
-              <div className="font-medium text-primary">{`${xpNeeded - progress.currentXP} XP to Level ${progress.level + 1}`}</div>
+              <div className="text-sm md:text-base font-medium text-primary">{`${xpNeeded - progress.currentXP} XP to Level ${progress.level + 1}`}</div>
             </div>
             <div className="h-1.5 bg-gray-200 w-full rounded-full overflow-hidden">
               <div
@@ -329,37 +359,47 @@ export default function DashboardPage() {
           {/* Tasks */}
           <Paper
             elevation={3}
-            sx={{ my: 4, p: 3, borderRadius: 10, fontFamily: "rubik" }}
+            sx={{
+              my: 4,
+              p: { xs: 2, md: 3 },
+              borderRadius: 10,
+              fontFamily: "rubik",
+            }}
           >
             <div className="flex justify-between w-full p-2 items-center">
               <div>
                 {/* Heading */}
-                <h1 className="text-2xl">{`${showRecentlyCompleted ? "Recently Completed" : `${isFiltered ? "Filtered" : "All"} Tasks`}`}</h1>
+                <h1 className="text-xl md:text-2xl">{`${showRecentlyCompleted ? "Recently Completed" : `${isFiltered ? "Filtered" : "All"} Tasks`}`}</h1>
                 {/* Subheading */}
-                <span className="text-sm text-gray-600">
+                <span className="text-xs md:text-sm text-gray-600">
                   {renderTaskSubheading()}
                 </span>
               </div>
 
-              <div className="flex gap-3">
+              <div className="flex flex-col-reverse md:flex-row gap-3">
                 <Button
+                  size={isMobile ? "sm" : "md"}
                   variant={showRecentlyCompleted ? "solid" : "ghost"}
-                  icon={<IoCheckmarkDoneOutline className="text-2xl" />}
+                  icon={
+                    <IoCheckmarkDoneOutline className="text-xl md:text-2xl" />
+                  }
                   label="Recently Completed"
                   onClick={() =>
                     setShowRecentlyCompleted(!showRecentlyCompleted)
                   }
                 />
                 <Button
+                  size={isMobile ? "sm" : "md"}
                   variant={
                     isFiltered && !showRecentlyCompleted ? "solid" : "ghost"
                   }
-                  icon={<IoFilterOutline className="text-2xl " />}
+                  icon={<IoFilterOutline className="text-xl md:text-2xl " />}
                   label="Filter"
                   onClick={() => setIsFilterDialogOpen(true)}
                 />
                 <Button
-                  icon={<IoAdd className="text-2xl" />}
+                  size={isMobile ? "sm" : "md"}
+                  icon={<IoAdd className="text-xl md:text-2xl" />}
                   label="Add Task"
                   onClick={() => setIsAddDialogOpen(true)}
                 />
@@ -368,7 +408,9 @@ export default function DashboardPage() {
 
             <hr className="my-2 text-gray-200" />
 
-            <div className="flex flex-col gap-3">{renderTasks()}</div>
+            <div className="flex flex-col gap-1.5 md:gap-3">
+              {renderTasks()}
+            </div>
           </Paper>
 
           {/* <LevelBar

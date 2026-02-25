@@ -13,6 +13,7 @@ type TaskCardProps = {
   onTimerComplete?: (taskId: string) => void;
   onEdit?: () => void;
   onDelete?: () => void;
+  isMobileView?: boolean;
 };
 
 export const TaskCard = ({
@@ -22,14 +23,21 @@ export const TaskCard = ({
   onTimerComplete = () => {},
   onEdit = () => {},
   onDelete = () => {},
+  isMobileView = false,
 }: TaskCardProps) => {
   const progress = useCompletionTimer(task, onTimerComplete);
   const isTimerActive = task.completed && task.deletionTimer;
   let countdown = Math.ceil(
     (TASK_TIMER_DURATION - (Date.now() - task.deletionTimer!)) / 1000,
   );
+
+  function truncateTitle(title: string, maxLength: number = 15): string {
+    if (title.length <= maxLength) return title;
+    return title.slice(0, maxLength).trim() + "...";
+  }
+
   return (
-    <div className="relative border border-gray-300 rounded-xl p-4 overflow-hidden font-rubik">
+    <div className="relative border border-gray-300 rounded-xl p-2 md:p-4 overflow-hidden font-rubik">
       {/* Animated Background Bar */}
       {isTimerActive && (
         <div
@@ -55,21 +63,24 @@ export const TaskCard = ({
               onClick={onToggleCompletion}
             />
           )}
-          <button className="text-xl cursor-pointer" onClick={onEdit}>
-            {task.title}
+          <button
+            className="text-lg md:text-xl cursor-pointer"
+            onClick={onEdit}
+          >
+            {isMobileView ? truncateTitle(task.title) : task.title}
           </button>
 
           {/* Timer countdown text */}
           {isTimerActive && countdown > 0 && (
-            <span className="text-xs text-green-700 font-medium ml-2">
+            <span className="text-xs text-green-700 font-medium md:ml-2">
               {countdown}s
             </span>
           )}
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-1 md:gap-2">
           {task.category && (
-            <p className="text-md p-2 bg-gray-100 rounded-xl text-gray-600">
+            <p className="hidden md:block text-md p-2 bg-gray-100 rounded-xl text-gray-600">
               {task.category}
             </p>
           )}
@@ -78,7 +89,7 @@ export const TaskCard = ({
               color: DIFFICULTIES[task.difficulty].color,
               backgroundColor: DIFFICULTIES[task.difficulty].background,
             }}
-            className="text-md p-2 rounded-xl"
+            className="hidden md:block text-md p-2 rounded-xl"
           >
             {DIFFICULTIES[task.difficulty].label} • {task.xp} XP
           </p>
