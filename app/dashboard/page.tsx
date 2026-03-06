@@ -36,6 +36,7 @@ import { useTaskStats } from "@/lib/hooks/useTaskStats";
 import { useUserProgress } from "@/lib/hooks/useUserProgress";
 import EmptyMessage from "@/components/EmptyMessage";
 import { usePersistedState } from "@/lib/hooks/usePersistedStorage";
+import Sidebar from "@/components/Sidebar";
 
 export default function DashboardPage() {
   // User state
@@ -200,18 +201,26 @@ export default function DashboardPage() {
             </Typography>
 
             {/* Controls */}
-            <div className="flex gap-2">
-              <button
-                className="rounded-full hover:bg-black/10 p-3 cursor-pointer transition-all"
-                onClick={() => setIsStatsHidden(!isStatsHidden)}
-                title={isStatsHidden ? "Show Stats" : "Hide Stats"}
-              >
-                {isStatsHidden ? (
-                  <IoEyeOffOutline className="text-2xl" />
-                ) : (
-                  <IoEyeOutline className="text-2xl" />
-                )}
-              </button>
+            <div className="flex flex-row-reverse md:flex-row gap-2">
+              {isMobile ? (
+                <Sidebar
+                  totalXP={progress.totalXP}
+                  completedTaskCount={completedTaskCount}
+                  streak={streak}
+                />
+              ) : (
+                <button
+                  className="rounded-full hover:bg-black/10 p-3 cursor-pointer transition-all"
+                  onClick={() => setIsStatsHidden(!isStatsHidden)}
+                  title={isStatsHidden ? "Show Stats" : "Hide Stats"}
+                >
+                  {isStatsHidden ? (
+                    <IoEyeOffOutline className="text-2xl" />
+                  ) : (
+                    <IoEyeOutline className="text-2xl" />
+                  )}
+                </button>
+              )}
 
               <button
                 className="rounded-full hover:bg-black/10 p-3 cursor-pointer transition-all"
@@ -228,8 +237,8 @@ export default function DashboardPage() {
           </div>
 
           {/* Stats */}
-          {!isStatsHidden && (
-            <div className="flex flex-col md:flex-row mt-2 mb-6 gap-2">
+          {!isStatsHidden && !isMobile && (
+            <div className="flex flex-row mt-2 mb-6 gap-2">
               <Paper
                 elevation={3}
                 sx={{
