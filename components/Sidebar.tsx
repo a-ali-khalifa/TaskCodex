@@ -3,20 +3,31 @@ import { Paper, Typography } from "@mui/material";
 import { useState } from "react";
 import { FaFireFlameCurved } from "react-icons/fa6";
 import { HiLightningBolt } from "react-icons/hi";
-import { HiOutlineBars3BottomRight } from "react-icons/hi2";
-import { IoCheckmarkDoneOutline, IoChevronForward } from "react-icons/io5";
+import {
+  IoCheckmarkDoneOutline,
+  IoChevronBack,
+  IoChevronForward,
+} from "react-icons/io5";
 
 type SidebarProps = {
   //Stats
   totalXP: number;
   completedTaskCount: number;
   streak: number;
+  level: number;
+  currentXP: number;
+  xpNeeded: number;
+  xpProgress: string;
 };
 
 export default function Sidebar({
   totalXP,
   completedTaskCount,
   streak,
+  level,
+  currentXP,
+  xpNeeded,
+  xpProgress,
 }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -28,7 +39,7 @@ export default function Sidebar({
         onClick={() => setIsOpen(true)}
         title={"Show Stats"}
       >
-        <HiOutlineBars3BottomRight className="text-2xl" />
+        <IoChevronBack className="text-2xl" />
       </button>
 
       {/* Backdrop */}
@@ -59,7 +70,26 @@ export default function Sidebar({
 
         {/* Content */}
         <div className="pt-16 px-6">
-          {/* <h2 className="text-2xl font-semibold mb-4">Level</h2> */}
+          <div className="flex flex-col gap-4 my-4">
+            <div className="flex justify-between items-center w-full">
+              <div className="flex gap-3">
+                <div className="border-2 font-medium border-primary text-primary rounded-full size-12 flex justify-center items-center text-xl md:text-2xl">
+                  {level}
+                </div>
+                <div>
+                  <p className="text-sm md:text-base font-semibold">{`Level ${level}`}</p>
+                  <p className="text-sm md:text-base text-gray-600">{`${currentXP} / ${xpNeeded} XP`}</p>
+                </div>
+              </div>
+              <div className="text-sm md:text-base font-medium text-primary">{`${xpNeeded - currentXP} XP to Level ${level + 1}`}</div>
+            </div>
+            <div className="h-1.5 bg-gray-200 w-full rounded-full overflow-hidden">
+              <div
+                className="h-full bg-primary transition-all duration-300"
+                style={{ width: `${xpProgress}%` }}
+              />
+            </div>
+          </div>
           {/* TODO: Move Level Bar here */}
 
           <h2 className="text-2xl font-semibold mb-4">Stats</h2>

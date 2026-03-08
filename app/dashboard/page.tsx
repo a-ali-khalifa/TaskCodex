@@ -207,6 +207,10 @@ export default function DashboardPage() {
                   totalXP={progress.totalXP}
                   completedTaskCount={completedTaskCount}
                   streak={streak}
+                  level={progress.level}
+                  xpProgress={xpProgress}
+                  xpNeeded={xpNeeded}
+                  currentXP={progress.currentXP}
                 />
               ) : (
                 <button
@@ -333,45 +337,46 @@ export default function DashboardPage() {
           )}
 
           {/* Level Progress */}
-          <Paper
-            elevation={3}
-            sx={{
-              mt: 2,
-              p: 4,
-              borderRadius: 5,
-              display: "flex",
-              flexDirection: "column",
-              gap: 1.5,
-              fontFamily: "rubik",
-            }}
-          >
-            <div className="flex justify-between items-center w-full">
-              <div className="flex gap-4">
-                <div className="border-2 font-medium border-primary text-primary rounded-full size-12 flex justify-center items-center text-xl md:text-2xl">
-                  {progress.level}
+          {!isMobile && (
+            <Paper
+              elevation={3}
+              sx={{
+                mt: 2,
+                p: 4,
+                borderRadius: 5,
+                display: "flex",
+                flexDirection: "column",
+                gap: 1.5,
+                fontFamily: "rubik",
+              }}
+            >
+              <div className="flex justify-between items-center w-full">
+                <div className="flex gap-4">
+                  <div className="border-2 font-medium border-primary text-primary rounded-full size-12 flex justify-center items-center text-xl md:text-2xl">
+                    {progress.level}
+                  </div>
+                  <div>
+                    <p className="text-sm md:text-base font-semibold">{`Level ${progress.level}`}</p>
+                    <p className="text-sm md:text-base text-gray-600">{`${progress.currentXP} / ${xpNeeded} XP`}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm md:text-base font-semibold">{`Level ${progress.level}`}</p>
-                  <p className="text-sm md:text-base text-gray-600">{`${progress.currentXP} / ${xpNeeded} XP`}</p>
-                </div>
+                <div className="text-sm md:text-base font-medium text-primary">{`${xpNeeded - progress.currentXP} XP to Level ${progress.level + 1}`}</div>
               </div>
-              <div className="text-sm md:text-base font-medium text-primary">{`${xpNeeded - progress.currentXP} XP to Level ${progress.level + 1}`}</div>
-            </div>
-            <div className="h-1.5 bg-gray-200 w-full rounded-full overflow-hidden">
-              <div
-                className="h-full bg-primary transition-all duration-300"
-                style={{ width: `${xpProgress}%` }}
-              />
-            </div>
-          </Paper>
-
+              <div className="h-1.5 bg-gray-200 w-full rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-primary transition-all duration-300"
+                  style={{ width: `${xpProgress}%` }}
+                />
+              </div>
+            </Paper>
+          )}
           {/* Tasks */}
           <Paper
             elevation={3}
             sx={{
               my: 4,
               p: { xs: 2, md: 3 },
-              borderRadius: 10,
+              borderRadius: isMobile ? 4 : 10,
               fontFamily: "rubik",
             }}
           >
