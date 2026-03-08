@@ -90,7 +90,6 @@ export default function Sidebar({
               />
             </div>
           </div>
-          {/* TODO: Move Level Bar here */}
 
           <h2 className="text-2xl font-semibold mb-4">Stats</h2>
 

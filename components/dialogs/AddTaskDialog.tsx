@@ -35,8 +35,16 @@ export default function AddTaskDialog({
   setTasks,
   isMuted,
 }: AddTaskDialogProps) {
+  const generateID = () => {
+    if (typeof crypto !== "undefined" && crypto.randomUUID) {
+      return crypto.randomUUID();
+    }
+    // Fallback for older browsers
+    return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+  };
+
   const [taskData, setTaskData] = useState<Task>(() => ({
-    id: crypto.randomUUID(),
+    id: generateID(),
     title: "",
     description: "",
     category: "",
@@ -71,7 +79,7 @@ export default function AddTaskDialog({
 
     // Reset and close
     setTaskData({
-      id: crypto.randomUUID(),
+      id: generateID(),
       title: "",
       description: "",
       category: "",
