@@ -1,4 +1,5 @@
 import { Container, Typography } from "@mui/material";
+import { FaGithub } from "react-icons/fa6";
 
 const page = () => {
   return (
@@ -86,6 +87,15 @@ const page = () => {
         or share it with someone who might find it useful. Every star helps the
         project grow.
       </Typography>
+      <a
+        href="https://github.com/a-ali-khalifa/TaskCodex"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
+      >
+        <FaGithub size={24} />
+        Star on GitHub
+      </a>
 
       <Typography
         sx={{
@@ -110,6 +120,7 @@ const page = () => {
         improving. If you'd like to contribute, you may use the link below.
         Regardless, all donations are well appreciated!
       </Typography>
+      {/* TODO: Embed donation link */}
     </Container>
   );
 };
