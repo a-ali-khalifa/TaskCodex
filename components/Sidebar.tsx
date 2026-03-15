@@ -94,22 +94,11 @@ export default function Sidebar({
           <h2 className="text-2xl font-semibold mb-4">Stats</h2>
 
           <div className="flex flex-col mt-2 mb-6 gap-2">
-            <Paper
-              elevation={3}
-              sx={{
-                p: 3,
-                borderRadius: 4,
-                flex: 1,
-                display: "flex",
-                alignItems: "center",
-                gap: 2,
-                background: "var(--color-blue-100)",
-              }}
-            >
-              <div className="flex-1 size-full flex justify-center items-center">
+            <div className="flex items-center p-3 flex-1 gap-4">
+              <div className="flex-1 size-full flex justify-center items-center bg-blue-100 rounded-lg p-3">
                 <HiLightningBolt className="text-primary text-[28px]" />
               </div>
-              <div className="flex flex-2 flex-col">
+              <div className="flex flex-3 flex-col">
                 <Typography sx={{ fontFamily: "rubik", fontSize: 14 }}>
                   Total XP
                 </Typography>
@@ -123,26 +112,16 @@ export default function Sidebar({
                   {totalXP}
                 </Typography>
               </div>
-            </Paper>
+            </div>
 
-            <Paper
-              elevation={3}
-              sx={{
-                p: 3,
-                borderRadius: 4,
-                flex: 1,
-                display: "flex",
-                alignItems: "center",
-                gap: 2,
-                opacity: 0.5,
-                background: "var(--color-orange-100)",
-              }}
+            <div
+              className="flex items-center p-3 flex-1 gap-4 opacity-50"
               title="Coming Soon!"
             >
-              <div className="flex-1 size-full flex items-center justify-center">
+              <div className="flex-1 size-full flex items-center justify-center bg-orange-100 rounded-lg p-3">
                 <FaFireFlameCurved className="text-secondary text-[28px]" />
               </div>
-              <div className="flex flex-2 flex-col">
+              <div className="flex flex-3 flex-col">
                 <Typography sx={{ fontFamily: "rubik", fontSize: 14 }}>
                   Streak
                 </Typography>
@@ -156,24 +135,16 @@ export default function Sidebar({
                   {streak}
                 </Typography>
               </div>
-            </Paper>
+            </div>
 
-            <Paper
-              elevation={3}
-              sx={{
-                p: 3,
-                borderRadius: 4,
-                flex: 1,
-                display: "flex",
-                alignItems: "center",
-                gap: 2,
-                background: "var(--color-green-100)",
-              }}
+            <div
+              className="flex items-center p-3 flex-1 gap-4"
+              title="Coming Soon!"
             >
-              <div className="flex-1 flex items-center justify-center size-full ">
-                <IoCheckmarkDoneOutline className="text-tertiary text-[24px]" />
+              <div className="flex-1 flex items-center justify-center size-full bg-green-100 rounded-lg p-3">
+                <IoCheckmarkDoneOutline className="text-tertiary text-[28px]" />
               </div>
-              <div className="flex flex-2 flex-col">
+              <div className="flex flex-3 flex-col">
                 <Typography sx={{ fontFamily: "rubik", fontSize: 14 }}>
                   Completed
                 </Typography>
@@ -185,7 +156,7 @@ export default function Sidebar({
                   }}
                 >{`${completedTaskCount} Task(s)`}</Typography>
               </div>
-            </Paper>
+            </div>
           </div>
         </div>
       </div>
